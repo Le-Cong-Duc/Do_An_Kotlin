@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "326274112580",
+    "project_id": "doan-kotlin",
+    "storage_bucket": "doan-kotlin.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:326274112580:android:83aace982ee952fafbf011",
+        "android_client_info": {
+          "package_name": "com.example.chatter"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAxLj3qQ3YvG19QIaTaKcyJt3yetHwg3vk"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

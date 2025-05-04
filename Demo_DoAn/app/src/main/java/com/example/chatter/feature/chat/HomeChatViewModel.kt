@@ -38,10 +38,14 @@ class HomeChatViewModel @Inject constructor() : ViewModel() {
             // it là dữ liệu đọc được
             it.children.forEach { data ->
                 // Lấy user trong dữ liệu
-                val user = User(id = data.key!!, name = data.value.toString())
+//                val user = User(
+                val id = data.key!!
+                val name = data.child("name").value.toString()
+                val email = data.child("email").value.toString()
+//                )
 
                 // add vào list
-                list.add(user)
+                list.add(User(id = id, name = name, email = email))
             }
             // gán list user vừa tạo được vào _users để có thể tự cập nhaatj được danh sách mới
             _users.value = list

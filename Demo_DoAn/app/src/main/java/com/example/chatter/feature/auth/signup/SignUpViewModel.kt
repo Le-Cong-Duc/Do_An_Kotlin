@@ -16,10 +16,12 @@ class SignUpViewModel @Inject constructor() : ViewModel() {
 
     fun signUp(name: String, email: String, password: String) {
         _state.value = SignUpState.Loading
+        // Tạo tài khoản dựa theo email, password
         FirebaseAuth.getInstance().createUserWithEmailAndPassword(email, password)
             .addOnCompleteListener { task ->
                 if (task.isSuccessful) {
                     task.result.user?.let {
+                        // cập nhật profile, tên hiển thị người dùng
                         it.updateProfile(
                             UserProfileChangeRequest.Builder()
                                 .setDisplayName(name)

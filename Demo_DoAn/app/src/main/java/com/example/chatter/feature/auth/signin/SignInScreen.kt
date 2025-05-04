@@ -37,21 +37,22 @@ import com.example.chatter.R
 @Composable
 fun SignInScreen(navController: NavController) {
     val viewModel: SignInViewModel = hiltViewModel()
+
+    // Tạo 1 state để lưu trạng thái
     val uiState = viewModel.state.collectAsState()
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
     val context = LocalContext.current
 
+    // Chạy mỗi lần state thay đổi
     LaunchedEffect(key1 = uiState.value) {
         when (uiState.value) {
             is SignInState.Success -> {
                 navController.navigate("home")
             }
-
             is SignInState.Error -> {
-                Toast.makeText(context, "Sign In Failed", Toast.LENGTH_SHORT).show()
+                Toast.makeText(context, "Sai email hoặc password", Toast.LENGTH_SHORT).show()
             }
-
             else -> {
 
             }
@@ -99,9 +100,11 @@ fun SignInScreen(navController: NavController) {
             if (uiState.value == SignInState.Loading) {
                 CircularProgressIndicator()
             }
+
             Button(
                 onClick = { viewModel.signIn(email, password) },
                 modifier = Modifier.fillMaxWidth(),
+                // ẩn đi nếu email password k hợp lệ hoặc k phải đang Load
                 enabled = email.isNotEmpty() && password.isNotEmpty() && uiState.value == SignInState.Nothing || uiState.value == SignInState.Error
             ) {
                 Text(text = "Sign In")

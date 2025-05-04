@@ -68,7 +68,7 @@ dependencies {
     implementation(libs.dagger.hilt.compose)
     implementation(libs.coil)
     implementation(libs.material)
-    implementation(platform("com.google.firebase:firebase-bom:32.8.0"))
+
     implementation("com.google.firebase:firebase-analytics")
     implementation("com.google.firebase:firebase-auth")
     implementation("com.google.firebase:firebase-database")
@@ -76,4 +76,12 @@ dependencies {
 
     implementation(platform("com.google.firebase:firebase-bom:33.13.0"))
     implementation("com.google.firebase:firebase-analytics")
+
+    implementation ("io.github.jan-tennert.supabase:storage-kt:1.4.7")
+    implementation ("io.github.jan-tennert.supabase:compose-auth:1.4.7")
+
+    val ktor_version = "2.3.13"
+    implementation ("io.ktor:ktor-client-android:$ktor_version")
+    implementation ("io.ktor:ktor-client-core:$ktor_version")
+    implementation ("io.ktor:ktor-utils:$ktor_version")
 }

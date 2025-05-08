@@ -1,4 +1,4 @@
-package com.example.chatter.user.chat
+package com.example.chatter.user.home.chat
 
 import android.net.Uri
 import androidx.activity.compose.rememberLauncherForActivityResult

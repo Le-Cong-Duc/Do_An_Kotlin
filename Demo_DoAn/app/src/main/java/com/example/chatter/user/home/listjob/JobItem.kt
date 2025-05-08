@@ -95,7 +95,7 @@ fun JobItem(job: Job, onApplyClick: () -> Unit) {
             Spacer(modifier = Modifier.height(8.dp))
 
             Text(
-                text = job.location,
+                text = job.address,
                 style = MaterialTheme.typography.bodyMedium
             )
 
@@ -109,7 +109,8 @@ fun JobItem(job: Job, onApplyClick: () -> Unit) {
                     onClick = onApplyClick,
                     colors = ButtonDefaults.buttonColors(
                         containerColor = Color(0xFF1976D2),
-                        contentColor = Color.White)
+                        contentColor = Color.White
+                    )
 
                 ) {
                     Text("Apply")

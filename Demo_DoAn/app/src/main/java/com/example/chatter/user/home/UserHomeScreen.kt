@@ -4,8 +4,10 @@ import android.os.Build
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Chat
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Person
+import androidx.compose.material.icons.filled.Work
 import androidx.compose.material3.Icon
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
@@ -19,19 +21,18 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.navigation.NavController
-import androidx.navigation.compose.rememberNavController
-import com.example.chatter.user.chat.HomeChatScreen
+import com.example.chatter.user.home.chat.HomeChatScreen
 import com.example.chatter.user.home.listjob.JobListScreen
 import com.example.chatter.user.home.myjob.MyJobsScreen
-import com.example.chatter.user.home.profile.ProfileScreen
+import com.example.chatter.user.home.profile.MainProfile
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun UserHomeScreen(navController: NavController) {
     val items = listOf(
         BottomNavItem("Home", Icons.Filled.Home),
-        BottomNavItem("Job", Icons.Filled.Home),
-        BottomNavItem("Chat", Icons.Filled.Home),
+        BottomNavItem("Job", Icons.Filled.Work),
+        BottomNavItem("Chat", Icons.Filled.Chat),
         BottomNavItem("Profile", Icons.Filled.Person)
     )
     var selectedItemIndex by remember { mutableStateOf(0) }
@@ -58,7 +59,7 @@ fun UserHomeScreen(navController: NavController) {
             0 -> JobListScreen(modifier = Modifier.padding(innerPadding))
             1 -> MyJobsScreen(modifier = Modifier.padding(innerPadding))
             2 -> HomeChatScreen(navController = navController)
-            3 -> ProfileScreen(modifier = Modifier.padding(innerPadding))
+            3 -> MainProfile(navController = navController)
         }
     }
 }

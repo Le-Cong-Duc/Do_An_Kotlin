@@ -69,6 +69,8 @@ dependencies {
     implementation(libs.dagger.hilt.compose)
     implementation(libs.coil)
     implementation(libs.material)
+    implementation("androidx.compose.material:material-icons-extended")
+    implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.9.0-rc01")
 
     implementation("com.google.firebase:firebase-analytics")
     implementation("com.google.firebase:firebase-auth")

@@ -1,4 +1,4 @@
-package com.example.chatter.user.chat
+package com.example.chatter.hr.home.chat_hr
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -36,9 +36,9 @@ import com.example.chatter.ui.theme.DarkGrey
 
 // Giao diện home
 @Composable
-fun HomeChatScreen(navController: NavController) {
+fun HomeChatScreen_Hr(navController: NavController) {
     // Tạo viewmodel bằng hilt để tự động Inject
-    val viewModel = hiltViewModel<HomeChatViewModel>()
+    val viewModel = hiltViewModel<HomeChatViewModel_Hr>()
 
     // lấy danh sách người dùng từ ViewModel
     // collectAsState : giúp UI tự động cập nhật khi dữ liệu thay đổi

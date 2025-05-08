@@ -1,4 +1,4 @@
-package com.example.chatter.hr.home
+package com.example.chatter.hr.home.listjob
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -19,11 +19,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import com.example.chatter.model.Job_Hr
+import com.example.chatter.model.Job
 
 
 @Composable
-fun JobItemWithEdit(job: Job_Hr, onEditClick: () -> Unit) {
+fun JobItemWithEdit(job: Job, onEditClick: () -> Unit) {
     Card(
         modifier = Modifier
             .padding(12.dp)

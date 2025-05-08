@@ -8,11 +8,17 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Button
+import androidx.compose.material3.DropdownMenuItem
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.ExposedDropdownMenuBox
+import androidx.compose.material3.ExposedDropdownMenuDefaults
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import java.time.LocalDate
@@ -28,17 +34,11 @@ fun ProfileEditForm(viewModel: ProfileViewModel) {
     }
 
     Column(modifier = Modifier.padding(16.dp)) {
-        OutlinedTextField(
-            value = profile.firstName,
-            onValueChange = { viewModel.updateProfile(profile.copy(firstName = it)) },
-            label = { Text("Tên") },
-            modifier = Modifier.fillMaxWidth()
-        )
 
         OutlinedTextField(
-            value = profile.lastName,
-            onValueChange = { viewModel.updateProfile(profile.copy(lastName = it)) },
-            label = { Text("Họ") },
+            value = profile.name,
+            onValueChange = { viewModel.updateProfile(profile.copy(name = it)) },
+            label = { Text("Tên") },
             modifier = Modifier.fillMaxWidth()
         )
 
@@ -60,29 +60,81 @@ fun ProfileEditForm(viewModel: ProfileViewModel) {
 
         Spacer(modifier = Modifier.height(8.dp))
 
-        DropdownSelector("Nơi ở", viewModel.locationOptions, profile.location) {
-            viewModel.updateProfile(profile.copy(location = it))
+        profile.address?.let {
+            DropdownSelector("Nơi ở", viewModel.addressList, it) {
+                viewModel.updateProfile(profile.copy(address = it))
+            }
         }
 
-        DropdownSelector("Giới tính", viewModel.genderOptions, profile.gender) {
-            viewModel.updateProfile(profile.copy(gender = it))
+        profile.gender?.let {
+            DropdownSelector("Giới tính", viewModel.genderList, it) {
+                viewModel.updateProfile(profile.copy(gender = it))
+            }
         }
 
-        DropdownSelector("Trình độ học vấn", viewModel.educationOptions, profile.education) {
-            viewModel.updateProfile(profile.copy(education = it))
+        profile.education?.let {
+            DropdownSelector("Trình độ học vấn", viewModel.educationList, it) {
+                viewModel.updateProfile(profile.copy(education = it))
+            }
         }
 
-        DropdownSelector("Kinh nghiệm", viewModel.experienceOptions, profile.experience) {
-            viewModel.updateProfile(profile.copy(experience = it))
+        profile.experience?.let {
+            DropdownSelector("Kinh nghiệm", viewModel.experienceList, it) {
+                viewModel.updateProfile(profile.copy(experience = it))
+            }
         }
 
         Spacer(modifier = Modifier.height(16.dp))
 
         Button(
-            onClick = { viewModel.toggleEditMode() },
+            onClick = { viewModel.editProfile() },
             modifier = Modifier.fillMaxWidth()
         ) {
             Text("Xác nhận")
+        }
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun DropdownSelector(
+    label: String,
+    options: List<String>,
+    selectedOption: String,
+    onOptionSelected: (String) -> Unit
+) {
+    var expanded by remember { mutableStateOf(false) }
+
+    ExposedDropdownMenuBox(
+        expanded = expanded,
+        onExpandedChange = { expanded = !expanded }
+    ) {
+        OutlinedTextField(
+            readOnly = true,
+            value = selectedOption,
+            onValueChange = {},
+            label = { Text(label) },
+            trailingIcon = {
+                ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded)
+            },
+            modifier = Modifier
+                .menuAnchor()
+                .fillMaxWidth()
+        )
+
+        ExposedDropdownMenu(
+            expanded = expanded,
+            onDismissRequest = { expanded = false }
+        ) {
+            options.forEach { selectionOption ->
+                DropdownMenuItem(
+                    text = { Text(selectionOption) },
+                    onClick = {
+                        onOptionSelected(selectionOption)
+                        expanded = false
+                    }
+                )
+            }
         }
     }
 }

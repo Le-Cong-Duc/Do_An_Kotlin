@@ -117,7 +117,7 @@ fun SignInScreen(navController: NavController) {
             }
 
             TextButton(
-                onClick = { navController.navigate("signup_hr") }
+                onClick = { navController.navigate("login_hr") }
             ) {
                 Text(text = "Bạn là HR?")
             }

@@ -15,13 +15,15 @@ import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.example.chatter.hr.auth.signin.SignInScreen_Hr
 import com.example.chatter.hr.auth.signup.SignUpScreen_Hr
-import com.example.chatter.hr.chat_hr.HomeChatScreen_Hr
+import com.example.chatter.hr.home.chat_hr.HomeChatScreen_Hr
 import com.example.chatter.hr.home.HrMainScreen
+import com.example.chatter.hr.home.profile.HrMainProfile
 import com.example.chatter.user.auth.signin.SignInScreen
 import com.example.chatter.user.auth.signup.SignUpScreen
-import com.example.chatter.user.chat.ChatScreen
-import com.example.chatter.user.chat.HomeChatScreen
+import com.example.chatter.user.home.chat.ChatScreen
+import com.example.chatter.user.home.chat.HomeChatScreen
 import com.example.chatter.user.home.UserHomeScreen
+import com.example.chatter.user.home.profile.MainProfile
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.FirebaseDatabase
 
@@ -77,6 +79,12 @@ fun MainApp() {
             }
             composable("homeHr") {
                 HrMainScreen(navController)
+            }
+            composable("profileUser") {
+                MainProfile(navController)
+            }
+            composable("profileHr") {
+                HrMainProfile(navController)
             }
             // điều hướng có thanh số
             composable("chat/{userId}&{userName}", arguments = listOf(

@@ -1,4 +1,4 @@
-package com.example.chatter.hr.home
+package com.example.chatter.hr.home.profile
 
 import android.os.Build
 import androidx.annotation.RequiresApi
@@ -24,24 +24,17 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
-
-data class HrProfile(
-    val companyName: String,
-    val phoneNumber: String,
-    val address: String,
-    val email: String
-)
+import com.example.chatter.model.Company
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun HrProfileScreen(
-    profile: HrProfile,
+    profile: Company,
     onEditClick: () -> Unit = {},
     onLogoutClick: () -> Unit = {},
-    modifier: Modifier = Modifier
 ) {
     Column(
-        modifier = modifier
+        modifier = Modifier
             .fillMaxWidth()
             .padding(24.dp),
         horizontalAlignment = Alignment.CenterHorizontally
@@ -57,10 +50,12 @@ fun HrProfileScreen(
                     horizontalArrangement = Arrangement.SpaceBetween,
                     modifier = Modifier.fillMaxWidth()
                 ) {
-                    Text(
-                        text = profile.companyName,
-                        style = MaterialTheme.typography.titleLarge
-                    )
+                    profile.companyName?.let {
+                        Text(
+                            text = it,
+                            style = MaterialTheme.typography.titleLarge
+                        )
+                    }
                     IconButton(onClick = onEditClick) {
                         Icon(imageVector = Icons.Default.Edit, contentDescription = "Chỉnh sửa")
                     }
@@ -76,7 +71,7 @@ fun HrProfileScreen(
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        Button(onClick = onLogoutClick, modifier = Modifier.fillMaxWidth()) {
+        Button(onClick = { onLogoutClick() }, modifier = Modifier.fillMaxWidth()) {
             Text("Đăng xuất")
         }
     }

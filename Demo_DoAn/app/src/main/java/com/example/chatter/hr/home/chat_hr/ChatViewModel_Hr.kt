@@ -1,4 +1,4 @@
-package com.example.chatter.hr.chat_hr
+package com.example.chatter.hr.home.chat_hr
 
 import android.content.Context
 import android.net.Uri

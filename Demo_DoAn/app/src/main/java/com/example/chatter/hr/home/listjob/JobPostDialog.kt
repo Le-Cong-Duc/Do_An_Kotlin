@@ -1,4 +1,4 @@
-package com.example.chatter.hr.home
+package com.example.chatter.hr.home.listjob
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
@@ -22,21 +22,21 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import com.example.chatter.model.Job_Hr
+import com.example.chatter.model.Job
 import kotlin.random.Random
 
 
 @Composable
 fun JobPostDialog(
-    existingJob: Job_Hr? = null,
+    existingJob: Job? = null,
     onDismiss: () -> Unit,
-    onPost: (Job_Hr) -> Unit
+    onPost: (Job) -> Unit
 ) {
     var title by remember { mutableStateOf(existingJob?.title ?: "") }
     var skills by remember { mutableStateOf(existingJob?.skills?.joinToString(", ") ?: "") }
     var experience by remember { mutableStateOf(existingJob?.experience ?: "") }
     var salary by remember { mutableStateOf(existingJob?.salary ?: "") }
-    var location by remember { mutableStateOf(existingJob?.location ?: "") }
+    var address by remember { mutableStateOf(existingJob?.address ?: "") }
 
     var gender by remember { mutableStateOf(existingJob?.gender ?: "Không yêu cầu") }
     var age by remember { mutableStateOf(existingJob?.age ?: "Không yêu cầu") }
@@ -56,13 +56,13 @@ fun JobPostDialog(
             } else {
                 TextButton(onClick = {
                     onPost(
-                        Job_Hr(
+                        Job(
                             id = existingJob?.id ?: Random.nextInt(),
                             title = title,
                             skills = skills.split(",").map { it.trim() },
                             experience = experience,
                             salary = salary,
-                            location = location,
+                            address = address,
                             company = existingJob?.company ?: "D&D Company",
                             gender = gender,
                             age = age,
@@ -103,7 +103,7 @@ fun JobPostDialog(
                     OutlinedTextField(
                         value = skills,
                         onValueChange = { skills = it },
-                        label = { Text("Kỹ năng (phân tách bằng dấu ,)") },
+                        label = { Text("Kỹ năng ") },
                         modifier = Modifier
                             .fillMaxWidth()
                             .padding(vertical = 4.dp)
@@ -125,19 +125,39 @@ fun JobPostDialog(
                             .padding(vertical = 4.dp)
                     )
                     OutlinedTextField(
-                        value = location,
-                        onValueChange = { location = it },
+                        value = address,
+                        onValueChange = { address = it },
                         label = { Text("Địa điểm") },
                         modifier = Modifier
                             .fillMaxWidth()
                             .padding(vertical = 4.dp)
                     )
                 } else {
-                    DropdownField("Giới tính", listOf("Không yêu cầu", "Nam", "Nữ"), gender) { gender = it }
-                    DropdownField("Tuổi", listOf("Không yêu cầu", "Dưới 25", "25-30", "Trên 30"), age) { age = it }
-                    DropdownField("Trình độ học vấn", listOf("Đại học", "Cử nhân", "Thạc sĩ", "Tiến sĩ"), education) { education = it }
-                    DropdownField("Loại hình công việc", listOf("Toàn thời gian", "Bán thời gian", "Thực tập"), jobType) { jobType = it }
-                    DropdownField("Hình thức làm việc", listOf("Tại công ty", "Online", "Linh hoạt"), workingForm) { workingForm = it }
+                    DropdownField(
+                        "Giới tính",
+                        listOf("Không yêu cầu", "Nam", "Nữ"),
+                        gender
+                    ) { gender = it }
+                    DropdownField(
+                        "Tuổi",
+                        listOf("Không yêu cầu", "Dưới 24", "24-30", "Trên 30"),
+                        age
+                    ) { age = it }
+                    DropdownField(
+                        "Trình độ học vấn",
+                        listOf("Đại học", "Cử nhân", "Thạc sĩ", "Tiến sĩ"),
+                        education
+                    ) { education = it }
+                    DropdownField(
+                        "Loại hình công việc",
+                        listOf("Toàn thời gian", "Bán thời gian", "Thực tập"),
+                        jobType
+                    ) { jobType = it }
+                    DropdownField(
+                        "Hình thức làm việc",
+                        listOf("Tại công ty", "Online", "Linh hoạt"),
+                        workingForm
+                    ) { workingForm = it }
                 }
             }
         }
@@ -146,10 +166,19 @@ fun JobPostDialog(
 
 
 @Composable
-fun DropdownField(label: String, options: List<String>, selected: String, onSelected: (String) -> Unit) {
+fun DropdownField(
+    label: String,
+    options: List<String>,
+    selected: String,
+    onSelected: (String) -> Unit
+) {
     var expanded by remember { mutableStateOf(false) }
 
-    Column(modifier = Modifier.fillMaxWidth().padding(vertical = 4.dp)) {
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(vertical = 4.dp)
+    ) {
         Text(text = label, modifier = Modifier.padding(bottom = 4.dp))
         Box {
             OutlinedTextField(

@@ -1,4 +1,4 @@
-package com.example.chatter.feature.auth.signin
+package com.example.chatter.hr.auth.signup
 
 import android.widget.Toast
 import androidx.compose.foundation.Image
@@ -35,26 +35,28 @@ import androidx.navigation.NavController
 import com.example.chatter.R
 
 @Composable
-fun SignInScreen(navController: NavController) {
-    val viewModel: SignInViewModel = hiltViewModel()
+fun SignUpScreen_Hr(navController: NavController) {
 
-    // Tạo 1 state để lưu trạng thái
+    val viewModel: SignUpViewModel_Hr = hiltViewModel()
     val uiState = viewModel.state.collectAsState()
+
+    var name by remember { mutableStateOf("") }
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
+    var confirm by remember { mutableStateOf("") }
     val context = LocalContext.current
 
-    // Chạy mỗi lần state thay đổi
     LaunchedEffect(key1 = uiState.value) {
         when (uiState.value) {
-            is SignInState.Success -> {
-                navController.navigate("home")
+            is SignUpState.Success -> {
+                navController.navigate("login_hr")
             }
-            is SignInState.Error -> {
-                Toast.makeText(context, "Sai email hoặc password", Toast.LENGTH_SHORT).show()
-            }
-            else -> {
 
+            is SignUpState.Error -> {
+                Toast.makeText(context, "Sign Up Failed", Toast.LENGTH_SHORT).show()
+            }
+
+            else -> {
             }
         }
     }
@@ -78,6 +80,15 @@ fun SignInScreen(navController: NavController) {
                     .background(Color.White)
             )
             OutlinedTextField(
+                value = name,
+                onValueChange = { name = it },
+                modifier = Modifier.fillMaxWidth(),
+                label = {
+                    Text(text = "Full name")
+                }
+            )
+
+            OutlinedTextField(
                 value = email,
                 onValueChange = { email = it },
                 modifier = Modifier.fillMaxWidth(),
@@ -95,27 +106,39 @@ fun SignInScreen(navController: NavController) {
                 },
                 visualTransformation = PasswordVisualTransformation()
             )
-            Spacer(modifier = Modifier.padding(20.dp))
 
-            if (uiState.value == SignInState.Loading) {
+            OutlinedTextField(
+                value = confirm,
+                onValueChange = { confirm = it },
+                modifier = Modifier.fillMaxWidth(),
+                label = {
+                    Text(text = "Confirm Password")
+                },
+                visualTransformation = PasswordVisualTransformation(),
+                isError = password.isNotEmpty() && confirm.isNotEmpty() && password != confirm
+            )
+
+            Spacer(modifier = Modifier.padding(20.dp))
+            if (uiState.value == SignUpState.Loading) {
                 CircularProgressIndicator()
             }
-
             Button(
-                onClick = { viewModel.signIn(email, password) },
+                onClick = {
+                    viewModel.signUp(name, email, password)
+                },
                 modifier = Modifier.fillMaxWidth(),
-                // ẩn đi nếu email password k hợp lệ hoặc k phải đang Load
-                enabled = email.isNotEmpty() && password.isNotEmpty() && uiState.value == SignInState.Nothing || uiState.value == SignInState.Error
+                enabled = name.isNotEmpty() && email.isNotEmpty() && password.isNotEmpty() && confirm.isNotEmpty() && password == confirm
+
             ) {
-                Text(text = "Sign In")
+                Text(text = "Sign Up")
             }
 
+
             TextButton(
-                onClick = { navController.navigate("signup") }
+                onClick = { navController.navigate("login_hr") },
             ) {
-                Text(text = "Don't have an account? Sign Up")
+                Text(text = "Already have an account? Sign In")
             }
         }
     }
 }
-

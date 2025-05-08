@@ -1,4 +1,4 @@
-package com.example.chatter.feature.chat
+package com.example.chatter.hr.chat_hr
 
 import android.util.Log
 import androidx.lifecycle.ViewModel
@@ -12,7 +12,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 // @Inject constructor() -> giúp Hilt tự động tạo HomeViewModel mà không cần tạo thủ công (hiltViewModel<HomeChatViewModel>())
-class HomeChatViewModel @Inject constructor() : ViewModel() {
+class HomeChatViewModel_Hr @Inject constructor() : ViewModel() {
     //Tạo biến kết nối với firebase realtime database
     private val firebaseDatabase = Firebase.database
 
@@ -42,10 +42,13 @@ class HomeChatViewModel @Inject constructor() : ViewModel() {
                 val id = data.key!!
                 val name = data.child("name").value.toString()
                 val email = data.child("email").value.toString()
+                val role = data.child("role").getValue(Boolean::class.java) ?: false
 //                )
 
                 // add vào list
-                list.add(User(id = id, name = name, email = email))
+                if (role == true) {
+                    list.add(User(id = id, name = name, email = email, role = role))
+                }
             }
             // gán list user vừa tạo được vào _users để có thể tự cập nhaatj được danh sách mới
             _users.value = list

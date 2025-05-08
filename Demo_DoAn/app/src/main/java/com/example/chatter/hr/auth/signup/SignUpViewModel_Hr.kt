@@ -1,4 +1,4 @@
-package com.example.chatter.feature.auth.signup
+package com.example.chatter.hr.auth.signup
 
 import androidx.lifecycle.ViewModel
 import com.google.firebase.auth.FirebaseAuth
@@ -10,7 +10,7 @@ import com.google.firebase.auth.UserProfileChangeRequest
 import com.google.firebase.database.FirebaseDatabase
 
 @HiltViewModel
-class SignUpViewModel @Inject constructor() : ViewModel() {
+class SignUpViewModel_Hr @Inject constructor() : ViewModel() {
 
     private val _state = MutableStateFlow<SignUpState>(SignUpState.Nothing)
     val state = _state.asStateFlow()
@@ -34,7 +34,8 @@ class SignUpViewModel @Inject constructor() : ViewModel() {
                                 val userMap = mapOf(
                                     "id" to user.uid,
                                     "name" to name,
-                                    "email" to email
+                                    "email" to email,
+                                    "role" to false
                                 )
 
                                 FirebaseDatabase.getInstance().getReference("user")

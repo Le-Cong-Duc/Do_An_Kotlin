@@ -3,17 +3,27 @@ package com.example.chatter
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
-import com.example.chatter.feature.auth.signin.SignInScreen
-import com.example.chatter.feature.auth.signup.SignUpScreen
-import com.example.chatter.feature.chat.ChatScreen
-import com.example.chatter.feature.chat.HomeChatScreen
+import com.example.chatter.hr.auth.signin.SignInScreen_Hr
+import com.example.chatter.hr.auth.signup.SignUpScreen_Hr
+import com.example.chatter.hr.chat_hr.HomeChatScreen_Hr
+import com.example.chatter.hr.home.HrMainScreen
+import com.example.chatter.user.auth.signin.SignInScreen
+import com.example.chatter.user.auth.signup.SignUpScreen
+import com.example.chatter.user.chat.ChatScreen
+import com.example.chatter.user.chat.HomeChatScreen
+import com.example.chatter.user.home.UserHomeScreen
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.database.FirebaseDatabase
 
 @Composable
 fun MainApp() {
@@ -21,16 +31,28 @@ fun MainApp() {
         modifier = Modifier.fillMaxSize()
     ) {
         val navController = rememberNavController()
+        var startDestination by remember { mutableStateOf("login") }
+//        val currentUser = FirebaseAuth.getInstance().currentUser
+//        val checkLogin = if (currentUser != null) "homeUser" else "login"
 
-        //Lấy từ fireAuth user hiện tại
-        val currentUser = FirebaseAuth.getInstance().currentUser
-        // Nếu có người dùng thì vào home ngược laij vào đăng nhaapj
-        val checkLogin = if (currentUser != null) "home" else "login"
+        LaunchedEffect(Unit) {
+            val currentUser = FirebaseAuth.getInstance().currentUser
+            if (currentUser != null) {
+                val dbRef =
+                    FirebaseDatabase.getInstance().getReference("user").child(currentUser.uid)
+                dbRef.get().addOnSuccessListener { dataSnapshot ->
+                    val role = dataSnapshot.child("role").getValue(Boolean::class.java)
+                    startDestination = if (role == true) "homeUser" else "homeHr"
+                }.addOnFailureListener {
+                    startDestination = "login" // lỗi thì về login
+                }
+            }
+        }
 
         // Navhost : định nghia tất cả route
         NavHost(
             navController = navController,
-            startDestination = checkLogin
+            startDestination = startDestination
         ) {
             composable("login") {
                 SignInScreen(navController)
@@ -38,8 +60,23 @@ fun MainApp() {
             composable("signup") {
                 SignUpScreen(navController)
             }
-            composable("home") {
+            composable("login_hr") {
+                SignInScreen_Hr(navController)
+            }
+            composable("signup_hr") {
+                SignUpScreen_Hr(navController)
+            }
+            composable("chat") {
                 HomeChatScreen(navController)
+            }
+            composable("chat_hr") {
+                HomeChatScreen_Hr(navController)
+            }
+            composable("homeUser") {
+                UserHomeScreen(navController)
+            }
+            composable("homeHr") {
+                HrMainScreen(navController)
             }
             // điều hướng có thanh số
             composable("chat/{userId}&{userName}", arguments = listOf(

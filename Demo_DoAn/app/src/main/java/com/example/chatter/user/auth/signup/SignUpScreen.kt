@@ -1,4 +1,4 @@
-package com.example.chatter.feature.auth.signup
+package com.example.chatter.user.auth.signup
 
 import android.widget.Toast
 import androidx.compose.foundation.Image
@@ -33,7 +33,6 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.example.chatter.R
-import com.example.chatter.feature.auth.signin.SignInState
 
 @Composable
 fun SignUpScreen(navController: NavController) {

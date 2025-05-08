@@ -1,7 +1,6 @@
-package com.example.chatter.feature.chat
+package com.example.chatter.hr.chat_hr
 
 import android.net.Uri
-import android.os.Environment
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.Image
@@ -42,8 +41,6 @@ import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
-import androidx.core.content.ContextCompat
-import androidx.core.content.FileProvider
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import coil.compose.AsyncImage
@@ -52,10 +49,6 @@ import com.example.chatter.model.Message
 import com.example.chatter.ui.theme.Purple
 import com.google.firebase.Firebase
 import com.google.firebase.auth.auth
-import java.io.File
-import java.text.SimpleDateFormat
-import java.util.Date
-import java.util.Locale
 
 @Composable
 fun ChatScreen(navController: NavController, userId: String, userName: String) {

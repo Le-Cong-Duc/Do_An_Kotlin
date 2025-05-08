@@ -1,4 +1,4 @@
-package com.example.chatter.feature.auth.signin
+package com.example.chatter.hr.auth.signin
 
 import androidx.lifecycle.ViewModel
 import com.google.firebase.auth.FirebaseAuth
@@ -8,7 +8,7 @@ import kotlinx.coroutines.flow.asStateFlow
 import javax.inject.Inject
 
 @HiltViewModel
-class SignInViewModel @Inject constructor() : ViewModel() {
+class SignInViewModel_Hr @Inject constructor() : ViewModel() {
     // tạo đối tượng lưu trữ trạng thái , mặc định là Nothing (không làm gì cả)
     private val _state = MutableStateFlow<SignInState>(SignInState.Nothing)
 

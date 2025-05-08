@@ -1,4 +1,4 @@
-package com.example.chatter.feature.chat
+package com.example.chatter.hr.chat_hr
 
 import android.content.Context
 import android.net.Uri
@@ -28,17 +28,25 @@ class ChatViewModel @Inject constructor(@ApplicationContext val context: Context
 
     val db = Firebase.database
 
-    //Lấy dữ liệu tin nhắn từ database dựa theo id
-    fun getListenMessage(userId: String) {
-        db.getReference("message").child(userId).orderByChild("createAt")
+    fun createChatRoomId(userId1: String, userId2: String): String {
+        return if (userId1 < userId2) {
+            "chat_${userId1}_${userId2}"
+        } else {
+            "chat_${userId2}_${userId1}"
+        }
+    }
+
+    // Sửa lại phương thức getListenMessage
+    fun getListenMessage(otherUserId: String) {
+        val currentUserId = Firebase.auth.currentUser?.uid ?: return
+        val chatRoomId = createChatRoomId(currentUserId, otherUserId)
+
+        db.getReference("message").child(chatRoomId).orderByChild("createAt")
             .addValueEventListener(object : ValueEventListener {
-                //onDataChange : đại diện cho dữ liệu tin nhắn của user
                 override fun onDataChange(snapshot: DataSnapshot) {
                     val list = mutableListOf<Message>()
                     snapshot.children.forEach { data ->
-                        // chuyển phần tử snapshot thành đối tượng message
                         val message = data.getValue(Message::class.java)
-                        // nếu dữ liệu không rỗng thì thêm vào list
                         message?.let {
                             list.add(it)
                         }
@@ -52,38 +60,32 @@ class ChatViewModel @Inject constructor(@ApplicationContext val context: Context
             })
     }
 
-    fun sendMesssage(userId: String, messageText: String?, image: String? = null) {
-        // Tạo 1 biến để chứa dữ liệu tin nhắn dựa theo class Message
+    // Sửa lại phương thức sendMessage
+    fun sendMesssage(otherUserId: String, messageText: String?, image: String? = null) {
+        val currentUserId = Firebase.auth.currentUser?.uid ?: return
+        val chatRoomId = createChatRoomId(currentUserId, otherUserId)
+
         val message = Message(
-            // firebase tự động tạo khóa cho mỗi lần push tin nhắn, nếu không tạo khóa thì UUID.randomUUID().toString() sẽ tạo 1 khóa ngẫu nhiên
             db.reference.push().key ?: UUID.randomUUID().toString(),
-            //ấy uid(user id) ừ firebase auth để xác nhận người nhắn
             Firebase.auth.currentUser?.uid ?: "",
             messageText,
             System.currentTimeMillis(),
-            // Lấy tên người gửi
             Firebase.auth.currentUser?.displayName ?: "",
             null,
             image
         )
-        // đẩy tin nhắn lên firebase tại node "message" dựa trên userId
-        // push() tạo 1 id duy nhất cho mỗi tin nhắn đảm bảo không trùng lặp id
-        // setValue() gửi đối tượng lên message lên firebase
-        db.getReference("message").child(userId).push()
+
+        db.getReference("message").child(chatRoomId).push()
             .setValue(message)
     }
 
-
-    fun sendImageMessage(uri: Uri, userId: String) {
+    // Sửa lại phương thức sendImageMessage
+    fun sendImageMessage(uri: Uri, otherUserId: String) {
         viewModelScope.launch {
-            //Tạo 1 biến gọi class liên kết supabase
             val storageUtils = SupabbaseStorageUtils(context)
-            // phương thức tải ảnh lên supabase
-            // uri: đường dẫn ảnh đã chọn từ thiết bị
             val downloadUri = storageUtils.upLoadImage(uri)
-            // nếu đường đẫn không phải null thì sử dụng phương thức sendMessage để gửi tin nhắn
             downloadUri?.let {
-                sendMesssage(userId, null, downloadUri.toString())
+                sendMesssage(otherUserId, null, downloadUri.toString())
             }
         }
     }

@@ -30,8 +30,8 @@ import com.example.chatter.model.User
 @Composable
 fun ProfileScreen(
     profile: User,
-    onEditClick: () -> Unit = {},
-    logOutClick: () -> Unit = {}
+    onEditClick: () -> Unit,
+    logOutClick: () -> Unit
 ) {
     Column(
         modifier = Modifier
@@ -55,27 +55,25 @@ fun ProfileScreen(
                         style = MaterialTheme.typography.titleLarge
                     )
                     IconButton(onClick = onEditClick) {
-                        Icon(imageVector = Icons.Default.Edit, contentDescription = "Chỉnh sửa")
+                        Icon(Icons.Default.Edit, contentDescription = "Edit")
                     }
                 }
 
                 Spacer(modifier = Modifier.height(8.dp))
-
+                Text("Số điện thoai: ${profile.numberPhone}")
                 Text("📍 Nơi ở: ${profile.address}")
                 Text("👤 Giới tính: ${profile.gender}")
                 Text("🎓 Trình độ học vấn: ${profile.education}")
                 Text("💼 Kinh nghiệm: ${profile.experience}")
 
                 profile.birthDate?.let {
-                    val dateStr = "${it.dayOfMonth}/${it.monthValue}/${it.year}"
-                    Text("🎂 Ngày sinh: $dateStr")
+                    Text("🎂 Ngày sinh: ${it.dayOfMonth}/${it.monthValue}/${it.year}")
                 }
             }
         }
 
         Spacer(modifier = Modifier.height(16.dp))
-
-        Button(onClick = { logOutClick() }, modifier = Modifier.fillMaxWidth()) {
+        Button(onClick = logOutClick, modifier = Modifier.fillMaxWidth()) {
             Text("Đăng xuất")
         }
     }

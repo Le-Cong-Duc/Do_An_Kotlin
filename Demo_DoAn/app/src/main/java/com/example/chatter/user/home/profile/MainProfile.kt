@@ -16,8 +16,8 @@ fun MainProfile(navController: NavController) {
     } else {
         ProfileScreen(
             profile = viewModel.userProfile.value,
-            { viewModel.editProfile() },
-            { viewModel.logout(navController) }
+            onEditClick = { viewModel.editProfile() },
+            logOutClick = { viewModel.logout(navController) }
         )
     }
 }

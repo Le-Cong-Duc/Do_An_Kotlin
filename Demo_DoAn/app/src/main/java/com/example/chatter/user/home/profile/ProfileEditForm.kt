@@ -60,6 +60,15 @@ fun ProfileEditForm(viewModel: ProfileViewModel) {
 
         Spacer(modifier = Modifier.height(8.dp))
 
+        profile.numberPhone?.let {
+            OutlinedTextField(
+                value = it,
+                onValueChange = { viewModel.updateProfile(profile.copy(numberPhone = it)) },
+                label = { Text("Số điện thoại") },
+                modifier = Modifier.fillMaxWidth()
+            )
+        }
+
         profile.address?.let {
             DropdownSelector("Nơi ở", viewModel.addressList, it) {
                 viewModel.updateProfile(profile.copy(address = it))
@@ -87,7 +96,18 @@ fun ProfileEditForm(viewModel: ProfileViewModel) {
         Spacer(modifier = Modifier.height(16.dp))
 
         Button(
-            onClick = { viewModel.editProfile() },
+            onClick = {
+                val updatedUser = profile.copy(
+                    name = profile.name,
+                    address = profile.address,
+                    numberPhone = profile.numberPhone,
+                    gender = profile.gender,
+                    education = profile.education,
+                    experience = profile.experience
+                )
+                viewModel.updateProfile(updatedUser)
+                viewModel.saveProfileToFirebase()
+            },
             modifier = Modifier.fillMaxWidth()
         ) {
             Text("Xác nhận")

@@ -57,7 +57,7 @@ fun JobPostDialog(
                 TextButton(onClick = {
                     onPost(
                         Job(
-                            id = existingJob?.id ?: Random.nextInt(),
+                            id = (existingJob?.id ?: Random.nextInt()).toString(),
                             title = title,
                             skills = skills.split(",").map { it.trim() },
                             experience = experience,

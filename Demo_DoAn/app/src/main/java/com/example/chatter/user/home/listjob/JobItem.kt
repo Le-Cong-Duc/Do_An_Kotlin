@@ -42,18 +42,20 @@ fun JobItem(job: Job, onApplyClick: () -> Unit) {
         Column(
             modifier = Modifier.padding(16.dp)
         ) {
-            Text(
-                text = job.title,
-                style = MaterialTheme.typography.titleMedium,
-                fontWeight = FontWeight.Bold
-            )
+            job.title?.let {
+                Text(
+                    text = it,
+                    style = MaterialTheme.typography.titleMedium,
+                    fontWeight = FontWeight.Bold
+                )
+            }
 
             Spacer(modifier = Modifier.height(8.dp))
 
             FlowRow(
                 horizontalArrangement = Arrangement.spacedBy(8.dp)
             ) {
-                job.skills.forEach { skill ->
+                job.skills?.forEach { skill ->
                     Surface(
                         shape = RoundedCornerShape(16.dp),
                         color = Color.DarkGray.copy(alpha = 0.3f)
@@ -77,27 +79,33 @@ fun JobItem(job: Job, onApplyClick: () -> Unit) {
                         .background(Color.DarkGray.copy(alpha = 0.3f), RoundedCornerShape(4.dp))
                         .padding(horizontal = 8.dp, vertical = 4.dp)
                 ) {
-                    Text(
-                        text = job.experience,
-                        style = MaterialTheme.typography.bodySmall
-                    )
+                    job.experience?.let {
+                        Text(
+                            text = it,
+                            style = MaterialTheme.typography.bodySmall
+                        )
+                    }
                 }
 
                 Spacer(modifier = Modifier.width(8.dp))
 
-                Text(
-                    text = job.salary,
-                    style = MaterialTheme.typography.bodyMedium,
-                    color = Color(0xFFFF4081)
-                )
+                job.salary?.let {
+                    Text(
+                        text = it,
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = Color(0xFFFF4081)
+                    )
+                }
             }
 
             Spacer(modifier = Modifier.height(8.dp))
 
-            Text(
-                text = job.address,
-                style = MaterialTheme.typography.bodyMedium
-            )
+            job.address?.let {
+                Text(
+                    text = it,
+                    style = MaterialTheme.typography.bodyMedium
+                )
+            }
 
             Spacer(modifier = Modifier.height(8.dp))
 

@@ -1,13 +1,14 @@
 package com.example.chatter.hr.home.listjob
 
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Edit
-import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
@@ -23,7 +24,11 @@ import com.example.chatter.model.Job
 
 
 @Composable
-fun JobItemWithEdit(job: Job, onEditClick: () -> Unit) {
+fun JobItemWithEdit(
+    job: Job,
+    onEditClick: () -> Unit,
+    onDeleteClick: () -> Unit
+) {
     Card(
         modifier = Modifier
             .padding(12.dp)
@@ -36,25 +41,26 @@ fun JobItemWithEdit(job: Job, onEditClick: () -> Unit) {
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 verticalAlignment = Alignment.Top,
-                horizontalArrangement = androidx.compose.foundation.layout.Arrangement.SpaceBetween
+                horizontalArrangement = Arrangement.SpaceBetween
             ) {
                 Column(modifier = Modifier.weight(1f)) {
-                    Text(text = job.title, fontWeight = FontWeight.Bold)
-                    Text(text = job.company, color = Color.Gray)
+                    job.title?.let { Text(text = it, fontWeight = FontWeight.Bold) }
+                    job.company?.let { Text(text = it, color = Color.Gray) }
                     Text(text = "Lương: ${job.salary}")
                     Text(text = "Kinh nghiệm: ${job.experience}")
+                    Text(text = "Địa điểm: ${job.address}")
+                    Text(text = "Loại hình: ${job.jobType}, ${job.workingForm}")
                 }
 
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     IconButton(onClick = onEditClick) {
                         Icon(Icons.Default.Edit, contentDescription = "Chỉnh sửa")
                     }
-                    Button(onClick = { /* TODO: Apply logic */ }) {
-                        Text("Hủy đăng")
+                    IconButton(onClick = onDeleteClick) {
+                        Icon(Icons.Default.Delete, contentDescription = "Xóa tin")
                     }
                 }
             }
         }
     }
 }
-

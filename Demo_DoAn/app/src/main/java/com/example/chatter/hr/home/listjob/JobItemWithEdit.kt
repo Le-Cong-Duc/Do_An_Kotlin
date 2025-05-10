@@ -1,5 +1,6 @@
 package com.example.chatter.hr.home.listjob
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -27,12 +28,14 @@ import com.example.chatter.model.Job
 fun JobItemWithEdit(
     job: Job,
     onEditClick: () -> Unit,
-    onDeleteClick: () -> Unit
+    onDeleteClick: () -> Unit,
+    onCardClick: () -> Unit
 ) {
     Card(
         modifier = Modifier
             .padding(12.dp)
-            .fillMaxWidth(),
+            .fillMaxWidth()
+            .clickable(onClick = onCardClick),
         elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
         shape = RoundedCornerShape(16.dp),
         colors = CardDefaults.cardColors(containerColor = Color(0xFFECECEC))

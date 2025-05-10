@@ -25,6 +25,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import com.example.chatter.model.User
+import java.time.LocalDate
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
@@ -66,8 +67,9 @@ fun ProfileScreen(
                 Text("🎓 Trình độ học vấn: ${profile.education}")
                 Text("💼 Kinh nghiệm: ${profile.experience}")
 
-                profile.birthDate?.let {
-                    Text("🎂 Ngày sinh: ${it.dayOfMonth}/${it.monthValue}/${it.year}")
+                profile.birthDate?.let { dateStr ->
+                    val date = LocalDate.parse(dateStr)
+                    Text(text = "📅 Ngày sinh: ${date.dayOfMonth}/${date.monthValue}/${date.year}")
                 }
             }
         }

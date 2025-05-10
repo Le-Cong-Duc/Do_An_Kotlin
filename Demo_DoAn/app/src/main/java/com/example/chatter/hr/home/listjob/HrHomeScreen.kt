@@ -21,6 +21,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -28,6 +29,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.chatter.model.Job
+import com.example.chatter.user.home.listjob.JobDetail
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -40,6 +42,9 @@ fun HrHomeScreen(modifier: Modifier = Modifier.fillMaxSize()) {
     var showDialog by remember { mutableStateOf(false) }
     var jobToEdit by remember { mutableStateOf<Job?>(null) }
     val snackbarHostState = remember { SnackbarHostState() }
+
+    val jobPosts = remember { mutableStateListOf<Job>() }
+    var selectedJobForDetail by remember { mutableStateOf<Job?>(null) }
 
     // Show error message in Snackbar if any
     LaunchedEffect(errorMessage) {
@@ -61,9 +66,11 @@ fun HrHomeScreen(modifier: Modifier = Modifier.fillMaxSize()) {
         },
         snackbarHost = { SnackbarHost(snackbarHostState) }
     ) { padding ->
-        Box(modifier = Modifier
-            .fillMaxSize()
-            .padding(padding)) {
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(padding)
+        ) {
 
             if (isLoading && jobs.isEmpty()) {
                 CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
@@ -79,6 +86,9 @@ fun HrHomeScreen(modifier: Modifier = Modifier.fillMaxSize()) {
                                 },
                                 onDeleteClick = {
                                     viewModel.deleteJob(job.id)
+                                },
+                                onCardClick = {
+                                    selectedJobForDetail = job
                                 }
                             )
                         }
@@ -87,7 +97,6 @@ fun HrHomeScreen(modifier: Modifier = Modifier.fillMaxSize()) {
             }
         }
     }
-
     if (showDialog) {
         JobPostDialog(
             existingJob = jobToEdit,
@@ -97,13 +106,25 @@ fun HrHomeScreen(modifier: Modifier = Modifier.fillMaxSize()) {
             },
             onPost = { newJob ->
                 if (jobToEdit != null) {
-                    viewModel.updateJob(newJob)
+                    val index = jobPosts.indexOf(jobToEdit)
+                    if (index != -1) {
+                        jobPosts[index] = newJob
+                    }
                 } else {
-                    viewModel.addJob(newJob)
+                    jobPosts.add(newJob)
                 }
                 showDialog = false
                 jobToEdit = null
             }
+
+        )
+    }
+
+
+    if (selectedJobForDetail != null) {
+        JobDetail(
+            job = selectedJobForDetail!!,
+            onDismiss = { selectedJobForDetail = null }
         )
     }
 }

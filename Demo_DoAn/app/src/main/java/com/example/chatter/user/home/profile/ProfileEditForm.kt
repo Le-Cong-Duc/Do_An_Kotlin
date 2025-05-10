@@ -28,9 +28,22 @@ import java.util.Calendar
 @Composable
 fun ProfileEditForm(viewModel: ProfileViewModel) {
     val profile = viewModel.userProfile.value
-    val dateState = remember { mutableStateOf(profile.birthDate ?: LocalDate.now()) }
+//    val dateState = remember { mutableStateOf(profile.birthDate ?: LocalDate.now()) }
+//    val calendar = Calendar.getInstance().apply {
+//        set(dateState.value.year, dateState.value.monthValue - 1, dateState.value.dayOfMonth)
+//    }
+    val dateState = remember {
+        mutableStateOf(
+            value = profile.birthDate?.let { LocalDate.parse(it) } ?: LocalDate.now()
+        )
+    }
+
     val calendar = Calendar.getInstance().apply {
-        set(dateState.value.year, dateState.value.monthValue - 1, dateState.value.dayOfMonth)
+        set(
+            dateState.value.year,
+            dateState.value.monthValue - 1,
+            dateState.value.dayOfMonth
+        )
     }
 
     Column(modifier = Modifier.padding(16.dp)) {
@@ -54,7 +67,7 @@ fun ProfileEditForm(viewModel: ProfileViewModel) {
                     newCalendar.get(Calendar.DAY_OF_MONTH)
                 )
                 dateState.value = newDate
-                viewModel.updateProfile(profile.copy(birthDate = newDate))
+                viewModel.updateProfile(profile.copy(birthDate = newDate.toString()))
             }
         )
 

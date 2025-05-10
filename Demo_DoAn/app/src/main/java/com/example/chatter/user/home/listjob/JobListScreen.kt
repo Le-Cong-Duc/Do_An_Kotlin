@@ -14,7 +14,6 @@ import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.Icon
 import androidx.compose.material3.OutlinedTextField
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
@@ -26,21 +25,26 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.example.chatter.model.Job
+import com.example.chatter.user.home.profile.ProfileViewModel
 
 @Composable
 fun JobListScreen(modifier: Modifier) {
     val viewModel: JobViewModel = viewModel()
     val jobs by viewModel.jobs.collectAsState()
-    val isLoading by viewModel.isLoading.collectAsState()
-    val errorMessage by viewModel.errorMessage.collectAsState()
 
     var searchText by remember { mutableStateOf("") }
     var isFilterExpanded by remember { mutableStateOf(false) }
     var selectedFilter by remember { mutableStateOf("Phù hợp nhất") }
+
+    val profileViewModel: ProfileViewModel = viewModel()
+    val userProfile = profileViewModel.userProfile.value
+
+    var selectedJob by remember { mutableStateOf<Job?>(null) }
+    var selectedJobDetail by remember { mutableStateOf<Job?>(null) }
 
 
     Column(
@@ -110,11 +114,37 @@ fun JobListScreen(modifier: Modifier) {
         Spacer(modifier = Modifier.height(8.dp))
 
         LazyColumn {
-                items(jobs) { job ->
-                    JobItem(job = job, onApplyClick = {
+            items(jobs) { job ->
+                JobItem(
+                    job = job,
+                    onApplyClick = {
+                        selectedJob = job
+                    },
+                    onDetailClick = { selectedJobDetail = job }
+                )
+            }
+        }
 
-                    })
+        selectedJob?.let {
+            ApplyJob(
+                userProfile = userProfile,
+                jobInfo = it,
+                onDismiss = { selectedJob = null },
+                onSubmit = {
+                    selectedJob = null
                 }
+            )
+        }
+
+        selectedJobDetail?.let {
+            JobDetail(
+                job = it,
+                onDismiss = { selectedJobDetail = null },
+                onApplyClick = {
+                    selectedJob = it
+                    selectedJobDetail = null
+                }
+            )
         }
     }
 }

@@ -6,10 +6,8 @@ import androidx.compose.runtime.mutableStateOf
 import com.example.chatter.model.User
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.FirebaseDatabase
-import com.google.firebase.database.getValue
 import androidx.navigation.NavController
-import java.time.LocalDate
-import java.time.format.DateTimeFormatter
+
 
 class ProfileViewModel : ViewModel() {
     var userProfile = mutableStateOf(User())

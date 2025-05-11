@@ -5,6 +5,7 @@ import androidx.annotation.RequiresApi
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Chat
+import androidx.compose.material.icons.filled.ChatBubble
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.Work
@@ -15,6 +16,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -29,39 +31,39 @@ import com.example.chatter.user.home.profile.MainProfile
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun UserHomeScreen(navController: NavController) {
-    val items = listOf(
+    var selectItem by remember { mutableIntStateOf(0) }
+
+    val listItems = listOf(
         BottomNavItem("Home", Icons.Filled.Home),
-        BottomNavItem("Job", Icons.Filled.Work),
-        BottomNavItem("Chat", Icons.Filled.Chat),
+        BottomNavItem("My Job", Icons.Filled.Work),
+        BottomNavItem("Chat", Icons.Filled.ChatBubble),
         BottomNavItem("Profile", Icons.Filled.Person)
     )
-    var selectedItemIndex by remember { mutableStateOf(0) }
 
     Scaffold(
         bottomBar = {
             NavigationBar {
-                items.forEachIndexed { index, item ->
+                listItems.forEachIndexed { index, item ->
                     NavigationBarItem(
-                        icon = {
-                            Icon(imageVector = item.icon, contentDescription = item.title)
-                        },
-                        label = {
-                            Text(text = item.title)
-                        },
-                        selected = selectedItemIndex == index,
-                        onClick = { selectedItemIndex = index }
+                        icon = { Icon(imageVector = item.icon, contentDescription = item.title) },
+                        label = { Text(text = item.title) },
+                        selected = selectItem == index,
+                        onClick = { selectItem = index }
                     )
+
                 }
             }
         }
-    ) { innerPadding ->
-        when (selectedItemIndex) {
-            0 -> JobListScreen(modifier = Modifier.padding(innerPadding))
-            1 -> MyJobsScreen(modifier = Modifier.padding(innerPadding))
+    ) {
+        when (selectItem) {
+            0 -> JobListScreen(modifier = Modifier.padding(it))
+            1 -> MyJobsScreen(modifier = Modifier.padding(it))
             2 -> HomeChatScreen(navController = navController)
             3 -> MainProfile(navController = navController)
         }
+
     }
+
 }
 
 data class BottomNavItem(

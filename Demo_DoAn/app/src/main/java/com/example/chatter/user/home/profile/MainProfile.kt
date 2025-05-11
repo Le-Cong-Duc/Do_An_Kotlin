@@ -11,12 +11,12 @@ import androidx.navigation.NavController
 fun MainProfile(navController: NavController) {
     val viewModel: ProfileViewModel = viewModel()
 
-    if (viewModel.isEditing.value) {
+    if (viewModel.editing.value) {
         ProfileEditForm(viewModel)
     } else {
         ProfileScreen(
             profile = viewModel.userProfile.value,
-            onEditClick = { viewModel.editProfile() },
+            onEditClick = { viewModel.isEditing() },
             logOutClick = { viewModel.logout(navController) }
         )
     }

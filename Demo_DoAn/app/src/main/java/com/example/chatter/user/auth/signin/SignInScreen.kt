@@ -33,26 +33,64 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.example.chatter.R
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.database.FirebaseDatabase
 
 @Composable
 fun SignInScreen(navController: NavController) {
     val viewModel: SignInViewModel = hiltViewModel()
 
     // Tạo 1 state để lưu trạng thái
-    val uiState = viewModel.state.collectAsState()
+    val state = viewModel.state.collectAsState()
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
     val context = LocalContext.current
 
     // Chạy mỗi lần state thay đổi
-    LaunchedEffect(key1 = uiState.value) {
-        when (uiState.value) {
+    LaunchedEffect(key1 = state.value) {
+        when (state.value) {
             is SignInState.Success -> {
-                navController.navigate("homeUser")
+                val currentUser = FirebaseAuth.getInstance().currentUser?.uid
+                if (currentUser != null) {
+                    val db = FirebaseDatabase.getInstance().getReference("user").child(currentUser)
+                    db.get().addOnSuccessListener { dataSnapshot ->
+                        if (dataSnapshot.exists()) {
+                            val role = dataSnapshot.child("role").getValue(Boolean::class.java)
+                            when (role) {
+                                true -> {
+                                    navController.navigate("homeUser")
+                                }
+
+                                false -> {
+                                    Toast.makeText(
+                                        context,
+                                        "Đây là tài khoản Hr\n(không để đăng nhập)",
+                                        Toast.LENGTH_SHORT
+                                    ).show()
+
+                                    password = ""
+                                    email = ""
+                                }
+
+                                else -> {
+                                    Toast.makeText(
+                                        context,
+                                        "Wrong email or password !!",
+                                        Toast.LENGTH_SHORT
+                                    ).show()
+                                }
+                            }
+                        } else {
+                            Toast.makeText(
+                                context,
+                                "Không tìm thấy thông tin người dùng",
+                                Toast.LENGTH_SHORT
+                            ).show()
+                        }
+                    }
+                }
             }
-            is SignInState.Error -> {
-                Toast.makeText(context, "Sai email hoặc password", Toast.LENGTH_SHORT).show()
-            }
+
             else -> {
 
             }
@@ -97,7 +135,7 @@ fun SignInScreen(navController: NavController) {
             )
             Spacer(modifier = Modifier.padding(20.dp))
 
-            if (uiState.value == SignInState.Loading) {
+            if (state.value == SignInState.Loading) {
                 CircularProgressIndicator()
             }
 
@@ -105,7 +143,7 @@ fun SignInScreen(navController: NavController) {
                 onClick = { viewModel.signIn(email, password) },
                 modifier = Modifier.fillMaxWidth(),
                 // ẩn đi nếu email password k hợp lệ hoặc k phải đang Load
-                enabled = email.isNotEmpty() && password.isNotEmpty() && uiState.value == SignInState.Nothing || uiState.value == SignInState.Error
+                enabled = email.isNotEmpty() && password.isNotEmpty()
             ) {
                 Text(text = "Sign In")
             }

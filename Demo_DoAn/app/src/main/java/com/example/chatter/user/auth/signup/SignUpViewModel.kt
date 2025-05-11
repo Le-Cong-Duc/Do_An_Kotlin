@@ -19,52 +19,45 @@ class SignUpViewModel @Inject constructor() : ViewModel() {
         _state.value = SignUpState.Loading
 
         FirebaseAuth.getInstance().createUserWithEmailAndPassword(email, password)
-            .addOnCompleteListener { task ->
-                if (task.isSuccessful) {
-                    val user = task.result.user
-                    if (user != null) {
-                        // Cập nhật displayName
-                        val profileUpdates = UserProfileChangeRequest.Builder()
-                            .setDisplayName(name)
-                            .build()
+            .addOnSuccessListener { task ->
+                val user = task.user ?: run {
+                    _state.value = SignUpState.Error
+                    return@addOnSuccessListener
+                }
 
-                        user.updateProfile(profileUpdates).addOnCompleteListener { updateTask ->
-                            if (updateTask.isSuccessful) {
-                                // Thêm người dùng vào Realtime Database
-                                val userMap = mapOf(
-                                    "id" to user.uid,
-                                    "name" to name,
-                                    "email" to email,
-                                    "role" to true
-                                )
+                val profileUpdates = UserProfileChangeRequest.Builder().setDisplayName(name).build()
 
-                                FirebaseDatabase.getInstance().getReference("user")
-                                    .child(user.uid)
-                                    .setValue(userMap)
-                                    .addOnCompleteListener { dbTask ->
-                                        _state.value = if (dbTask.isSuccessful) {
-                                            SignUpState.Success
-                                        } else {
-                                            SignUpState.Error
-                                        }
-                                    }
-                            } else {
+                user.updateProfile(profileUpdates)
+                    .addOnSuccessListener {
+                        val userInfo = mapOf(
+                            "id" to user.uid,
+                            "name" to name,
+                            "email" to email,
+                            "role" to true
+                        )
+
+                        FirebaseDatabase.getInstance().getReference("user")
+                            .child(user.uid).setValue(userInfo)
+                            .addOnSuccessListener {
+                                _state.value = SignUpState.Success
+                            }.addOnFailureListener {
                                 _state.value = SignUpState.Error
                             }
-                        }
-                    } else {
+
+                    }.addOnFailureListener {
                         _state.value = SignUpState.Error
                     }
-                } else {
-                    _state.value = SignUpState.Error
-                }
+
+            }.addOnFailureListener {
+                _state.value = SignUpState.Error
+
             }
     }
 }
 
 sealed class SignUpState {
-    object Nothing : SignUpState()
-    object Loading : SignUpState()
-    object Success : SignUpState()
-    object Error : SignUpState()
+    data object Nothing : SignUpState()
+    data object Loading : SignUpState()
+    data object Success : SignUpState()
+    data object Error : SignUpState()
 }

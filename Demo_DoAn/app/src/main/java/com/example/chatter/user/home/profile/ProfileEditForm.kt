@@ -28,15 +28,9 @@ import java.util.Calendar
 @Composable
 fun ProfileEditForm(viewModel: ProfileViewModel) {
     val profile = viewModel.userProfile.value
-//    val dateState = remember { mutableStateOf(profile.birthDate ?: LocalDate.now()) }
-//    val calendar = Calendar.getInstance().apply {
-//        set(dateState.value.year, dateState.value.monthValue - 1, dateState.value.dayOfMonth)
-//    }
-    val dateState = remember {
-        mutableStateOf(
-            value = profile.birthDate?.let { LocalDate.parse(it) } ?: LocalDate.now()
-        )
-    }
+
+    val birth = LocalDate.parse(profile.birthDate)
+    val dateState = remember { mutableStateOf(birth ?: LocalDate.now()) }
 
     val calendar = Calendar.getInstance().apply {
         set(
@@ -60,14 +54,15 @@ fun ProfileEditForm(viewModel: ProfileViewModel) {
         DatePickerField(
             label = "Ngày sinh",
             selectedDate = calendar,
-            onDateSelected = { newCalendar ->
-                val newDate = LocalDate.of(
-                    newCalendar.get(Calendar.YEAR),
-                    newCalendar.get(Calendar.MONTH) + 1,
-                    newCalendar.get(Calendar.DAY_OF_MONTH)
+            onDateSelected = { calendar ->
+                val dateUpdate = LocalDate.of(
+                    calendar.get(Calendar.YEAR),
+                    calendar.get(Calendar.MONTH) + 1,
+                    calendar.get(Calendar.DAY_OF_MONTH)
                 )
-                dateState.value = newDate
-                viewModel.updateProfile(profile.copy(birthDate = newDate.toString()))
+                dateState.value = dateUpdate
+
+                viewModel.updateProfile(profile.copy(birthDate = dateUpdate.toString()))
             }
         )
 
@@ -119,7 +114,7 @@ fun ProfileEditForm(viewModel: ProfileViewModel) {
                     experience = profile.experience
                 )
                 viewModel.updateProfile(updatedUser)
-                viewModel.saveProfileToFirebase()
+                viewModel.saveProfile()
             },
             modifier = Modifier.fillMaxWidth()
         ) {

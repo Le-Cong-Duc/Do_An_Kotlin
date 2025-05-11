@@ -11,23 +11,25 @@ import androidx.navigation.NavController
 
 class ProfileViewModel : ViewModel() {
     var userProfile = mutableStateOf(User())
-    var isEditing = mutableStateOf(false)
 
-    val addressList = listOf("Hà Nội", "Đà Nẵng", "TP.HCM")
-    val genderList = listOf("Nam", "Nữ", "Khác")
+    var editing = mutableStateOf(false)
+
+    val addressList = listOf("Hà Nội", "Đà Nẵng", "TP HCM", "Nghệ An", "Quảng Nam", "Quảng Trị")
+    val genderList = listOf("Nam", "Nữ")
     val educationList = listOf("Cử nhân", "Kỹ sư", "Thạc sĩ", "Tiến sĩ")
-    val experienceList = listOf("Tôi chưa có kinh nghiệm", "Dưới 1 năm", "1-3 năm", "Trên 3 năm")
+    val experienceList =
+        listOf("Chưa có kinh nghiệm", "dưới 1 năm", "dưới 2 năm", "dưới 3 năm", "trên 3 năm")
 
     init {
-        fetchUserProfile()
+        getUserProfile()
     }
 
-    fun fetchUserProfile() {
-        val uid = FirebaseAuth.getInstance().currentUser?.uid ?: return
-        val ref = FirebaseDatabase.getInstance().getReference("user/$uid")
+    private fun getUserProfile() {
+        val userId = FirebaseAuth.getInstance().currentUser?.uid
+        val dbRef = FirebaseDatabase.getInstance().getReference("user/$userId")
 
-        ref.get().addOnSuccessListener { snapshot ->
-            snapshot.getValue(User::class.java)?.let {
+        dbRef.get().addOnSuccessListener { snapShot ->
+            snapShot.getValue(User::class.java)?.let {
                 userProfile.value = it
             }
         }.addOnFailureListener {
@@ -35,29 +37,29 @@ class ProfileViewModel : ViewModel() {
         }
     }
 
-    fun updateProfile(newProfile: User) {
-        userProfile.value = newProfile
+    fun updateProfile(profileUpdate: User) {
+        userProfile.value = profileUpdate
     }
 
-    fun saveProfileToFirebase() {
-        val uid = FirebaseAuth.getInstance().currentUser?.uid ?: return
-        val ref = FirebaseDatabase.getInstance().getReference("user/$uid")
+    fun saveProfile() {
+        val userId = FirebaseAuth.getInstance().currentUser?.uid
+        val dbRef = FirebaseDatabase.getInstance().getReference("user/$userId")
 
-        ref.setValue(userProfile.value).addOnSuccessListener {
-            isEditing.value = false
-        }.addOnFailureListener {
-            Log.e("Profile", "Lỗi khi cập nhật dữ liệu", it)
-        }
+        dbRef.setValue(userProfile.value)
+            .addOnSuccessListener { editing.value = false }
+            .addOnFailureListener { Log.e("ProfileViewModel", "Lỗi khi lưu dữ liệu", it) }
     }
 
-    fun editProfile() {
-        isEditing.value = true
+    fun isEditing() {
+        editing.value = true
     }
 
     fun logout(navController: NavController) {
         FirebaseAuth.getInstance().signOut()
         navController.navigate("login") {
-            popUpTo("homeUser") { inclusive = true }
+            popUpTo("homeUser") {
+                inclusive = true
+            }
         }
     }
 }

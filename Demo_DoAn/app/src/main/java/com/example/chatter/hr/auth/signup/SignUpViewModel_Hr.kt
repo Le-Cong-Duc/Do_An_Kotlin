@@ -10,61 +10,54 @@ import com.google.firebase.auth.UserProfileChangeRequest
 import com.google.firebase.database.FirebaseDatabase
 
 @HiltViewModel
-class SignUpViewModel_Hr @Inject constructor() : ViewModel() {
+class SignUpViewModelHr @Inject constructor() : ViewModel() {
 
     private val _state = MutableStateFlow<SignUpState>(SignUpState.Nothing)
     val state = _state.asStateFlow()
 
     fun signUp(name: String, email: String, password: String) {
         _state.value = SignUpState.Loading
-
         FirebaseAuth.getInstance().createUserWithEmailAndPassword(email, password)
-            .addOnCompleteListener { task ->
-                if (task.isSuccessful) {
-                    val user = task.result.user
-                    if (user != null) {
-                        // Cập nhật displayName
-                        val profileUpdates = UserProfileChangeRequest.Builder()
-                            .setDisplayName(name)
-                            .build()
-
-                        user.updateProfile(profileUpdates).addOnCompleteListener { updateTask ->
-                            if (updateTask.isSuccessful) {
-                                // Thêm người dùng vào Realtime Database
-                                val userMap = mapOf(
-                                    "id" to user.uid,
-                                    "name" to name,
-                                    "email" to email,
-                                    "role" to false
-                                )
-
-                                FirebaseDatabase.getInstance().getReference("user")
-                                    .child(user.uid)
-                                    .setValue(userMap)
-                                    .addOnCompleteListener { dbTask ->
-                                        _state.value = if (dbTask.isSuccessful) {
-                                            SignUpState.Success
-                                        } else {
-                                            SignUpState.Error
-                                        }
-                                    }
-                            } else {
-                                _state.value = SignUpState.Error
-                            }
-                        }
-                    } else {
-                        _state.value = SignUpState.Error
-                    }
-                } else {
+            .addOnSuccessListener { task ->
+                val user = task.user ?: run {
                     _state.value = SignUpState.Error
+                    return@addOnSuccessListener
                 }
+
+                val profileUser = UserProfileChangeRequest.Builder().setDisplayName(name).build()
+
+                user.updateProfile(profileUser)
+                    .addOnSuccessListener {
+                        val userInfo = mapOf(
+                            "id" to user.uid,
+                            "name" to name,
+                            "email" to email,
+                            "role" to false
+                        )
+
+                        FirebaseDatabase.getInstance().getReference("user")
+                            .child(user.uid).setValue(userInfo)
+                            .addOnSuccessListener {
+                                _state.value = SignUpState.Success
+                            }
+                            .addOnFailureListener {
+                                _state.value = SignUpState.Error  // khong the them vao database
+                            }
+
+                    }
+                    .addOnFailureListener {
+                        _state.value = SignUpState.Error // Khong the cap nhat profile
+                    }
+            }
+            .addOnFailureListener {
+                _state.value = SignUpState.Error   // Khong the dang ki
             }
     }
 }
 
 sealed class SignUpState {
-    object Nothing : SignUpState()
-    object Loading : SignUpState()
-    object Success : SignUpState()
-    object Error : SignUpState()
+    data object Nothing : SignUpState()
+    data object Loading : SignUpState()
+    data object Success : SignUpState()
+    data object Error : SignUpState()
 }

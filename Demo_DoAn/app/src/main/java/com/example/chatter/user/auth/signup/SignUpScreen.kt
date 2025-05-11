@@ -38,7 +38,7 @@ import com.example.chatter.R
 fun SignUpScreen(navController: NavController) {
 
     val viewModel: SignUpViewModel = hiltViewModel()
-    val uiState = viewModel.state.collectAsState()
+    val state = viewModel.state.collectAsState()
 
     var name by remember { mutableStateOf("") }
     var email by remember { mutableStateOf("") }
@@ -46,8 +46,8 @@ fun SignUpScreen(navController: NavController) {
     var confirm by remember { mutableStateOf("") }
     val context = LocalContext.current
 
-    LaunchedEffect(key1 = uiState.value) {
-        when (uiState.value) {
+    LaunchedEffect(key1 = state.value) {
+        when (state.value) {
             is SignUpState.Success -> {
                 navController.navigate("login")
             }
@@ -119,7 +119,7 @@ fun SignUpScreen(navController: NavController) {
             )
 
             Spacer(modifier = Modifier.padding(20.dp))
-            if (uiState.value == SignUpState.Loading) {
+            if (state.value == SignUpState.Loading) {
                 CircularProgressIndicator()
             }
             Button(

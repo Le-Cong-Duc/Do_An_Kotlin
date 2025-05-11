@@ -1,7 +1,6 @@
 package com.example.chatter.hr.home
 
-import android.os.Build
-import androidx.annotation.RequiresApi
+
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Home
@@ -24,7 +23,6 @@ import com.example.chatter.hr.home.chat_hr.HomeChatScreen_Hr
 import com.example.chatter.hr.home.listjob.HrHomeScreen
 import com.example.chatter.hr.home.profile.HrMainProfile
 
-@RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun HrMainScreen(navController: NavController) {
     val items = listOf(

@@ -33,12 +33,13 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.example.chatter.R
+import com.example.chatter.hr.auth.signin.SignInState
 
 @Composable
 fun SignUpScreen_Hr(navController: NavController) {
 
-    val viewModel: SignUpViewModel_Hr = hiltViewModel()
-    val uiState = viewModel.state.collectAsState()
+    val viewModel: SignUpViewModelHr = hiltViewModel()
+    val state = viewModel.state.collectAsState()
 
     var name by remember { mutableStateOf("") }
     var email by remember { mutableStateOf("") }
@@ -46,17 +47,14 @@ fun SignUpScreen_Hr(navController: NavController) {
     var confirm by remember { mutableStateOf("") }
     val context = LocalContext.current
 
-    LaunchedEffect(key1 = uiState.value) {
-        when (uiState.value) {
+    LaunchedEffect(key1 = state.value) {
+        when (state.value) {
             is SignUpState.Success -> {
                 navController.navigate("login_hr")
             }
 
-            is SignUpState.Error -> {
-                Toast.makeText(context, "Sign Up Failed", Toast.LENGTH_SHORT).show()
-            }
-
             else -> {
+                Toast.makeText(context, "Sign Up Failed", Toast.LENGTH_SHORT).show()
             }
         }
     }
@@ -119,9 +117,11 @@ fun SignUpScreen_Hr(navController: NavController) {
             )
 
             Spacer(modifier = Modifier.padding(20.dp))
-            if (uiState.value == SignUpState.Loading) {
+
+            if (state.value == SignUpState.Loading) {
                 CircularProgressIndicator()
             }
+
             Button(
                 onClick = {
                     viewModel.signUp(name, email, password)

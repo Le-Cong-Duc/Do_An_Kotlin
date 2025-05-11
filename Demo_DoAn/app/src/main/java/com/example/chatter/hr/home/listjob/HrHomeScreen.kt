@@ -46,7 +46,6 @@ fun HrHomeScreen(modifier: Modifier = Modifier.fillMaxSize()) {
     val jobPosts = remember { mutableStateListOf<Job>() }
     var selectedJobForDetail by remember { mutableStateOf<Job?>(null) }
 
-    // Show error message in Snackbar if any
     LaunchedEffect(errorMessage) {
         errorMessage?.let {
             snackbarHostState.showSnackbar(it)

@@ -14,7 +14,6 @@ class HrJobRepository {
     private val database = FirebaseDatabase.getInstance()
     private val jobsRef = database.getReference("job")
 
-    // Create or update a job
     suspend fun saveJob(job: Job): Result<Job> {
         return try {
             jobsRef.child(job.id.toString()).setValue(job).await()
@@ -24,7 +23,6 @@ class HrJobRepository {
         }
     }
 
-    // Get all jobs as a Flow
     fun getAllJobs(): Flow<List<Job>> = callbackFlow {
         val listener = object : ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
@@ -49,7 +47,6 @@ class HrJobRepository {
         }
     }
 
-    // Delete a job
     suspend fun deleteJob(jobId: String?): Result<Unit> {
         return try {
             jobsRef.child(jobId.toString()).removeValue().await()
@@ -59,7 +56,6 @@ class HrJobRepository {
         }
     }
 
-    // Get a single job by ID
     suspend fun getJobById(jobId: Int): Result<Job> {
         return try {
             val snapshot = jobsRef.child(jobId.toString()).get().await()

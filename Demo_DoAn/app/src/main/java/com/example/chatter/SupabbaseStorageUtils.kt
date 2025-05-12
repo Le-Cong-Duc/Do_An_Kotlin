@@ -21,17 +21,13 @@ class SupabbaseStorageUtils(val context: Context) {
 
     suspend fun upLoadImage(uri: Uri): String? {
         try {
-            //Lấy phần path của uri nếu không lấy được thif mặc định là jpg
             val path = uri.path?.substringAfterLast(".") ?: "jpg"
-            // Tạo tên tệp ngẫu nhiên
             val fileName = "${UUID.randomUUID()}.$path"
-            //mở một luồng dữ liệu từ uri nếu không -> trả về null
+
             val inputStream = context.contentResolver.openInputStream(uri) ?: return null
 
-            // dùng supabase api để tải ảnh lên bucket trên supabase ở đây là doan-images với tên file và inputStream
             supabase.storage.from(BUCKET_NAME).upload(fileName, inputStream.readBytes())
 
-            // Sau khi tải lên thành công thì lấy tên ảnh từ supabase storage
             val publicUrl = supabase.storage.from(BUCKET_NAME).publicUrl(fileName)
 
             return publicUrl

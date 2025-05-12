@@ -13,5 +13,7 @@ data class UserCV(
     val jobId: String = "",
     val jobTitle: String = "",
     val status: Int = 0,
+    val dateInterView: String? = "",
+    val date: String? = "",
     val createdAt: Long = System.currentTimeMillis()
 )

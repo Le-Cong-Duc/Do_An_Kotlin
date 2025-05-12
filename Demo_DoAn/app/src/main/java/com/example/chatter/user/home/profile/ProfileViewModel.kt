@@ -51,7 +51,7 @@ class ProfileViewModel : ViewModel() {
     }
 
     fun isEditing() {
-        editing.value = true
+        editing.value = !editing.value
     }
 
     fun logout(navController: NavController) {

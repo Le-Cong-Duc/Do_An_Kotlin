@@ -25,7 +25,7 @@ import com.example.chatter.model.Job
 
 
 @Composable
-fun JobItemWithEdit(
+fun JobItem(
     job: Job,
     onEditClick: () -> Unit,
     onDeleteClick: () -> Unit,

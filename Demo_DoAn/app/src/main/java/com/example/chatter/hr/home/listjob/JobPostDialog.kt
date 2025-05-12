@@ -23,8 +23,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.example.chatter.model.Job
-import kotlin.random.Random
-
+import java.util.UUID
 
 @Composable
 fun JobPostDialog(
@@ -35,14 +34,19 @@ fun JobPostDialog(
     var title by remember { mutableStateOf(existingJob?.title ?: "") }
     var skills by remember { mutableStateOf(existingJob?.skills?.joinToString(", ") ?: "") }
     var experience by remember { mutableStateOf(existingJob?.experience ?: "") }
-    var salary by remember { mutableStateOf(existingJob?.salary ?: "") }
+    var salary by remember { mutableStateOf(existingJob?.salary ?: 0) }
     var address by remember { mutableStateOf(existingJob?.address ?: "") }
 
+    var category by remember { mutableStateOf(existingJob?.category ?: "") }
     var gender by remember { mutableStateOf(existingJob?.gender ?: "Không yêu cầu") }
     var age by remember { mutableStateOf(existingJob?.age ?: "Không yêu cầu") }
     var education by remember { mutableStateOf(existingJob?.education ?: "Đại học") }
     var jobType by remember { mutableStateOf(existingJob?.jobType ?: "Toàn thời gian") }
     var workingForm by remember { mutableStateOf(existingJob?.workingForm ?: "Tại công ty") }
+
+    // Theo dõi lỗi
+    var hasError by remember { mutableStateOf(false) }
+    var errorMessage by remember { mutableStateOf("") }
 
     var step by remember { mutableStateOf(1) }
 
@@ -50,20 +54,38 @@ fun JobPostDialog(
         onDismissRequest = onDismiss,
         confirmButton = {
             if (step == 1) {
-                TextButton(onClick = { step = 2 }) {
+                TextButton(onClick = {
+                    // Kiểm tra các trường bắt buộc ở bước 1
+                    if (title.isBlank()) {
+                        hasError = true
+                        errorMessage = "Vui lòng nhập tiêu đề công việc"
+                    } else {
+                        hasError = false
+                        step = 2
+                    }
+                }) {
                     Text("Tiếp tục")
                 }
             } else {
                 TextButton(onClick = {
+                    // Tạo job mới với ID được tạo hoặc dùng ID hiện có
+                    val jobId = existingJob?.id ?: UUID.randomUUID().toString()
+
+                    val skillsList = skills
+                        .split(",")
+                        .map { it.trim() }
+                        .filter { it.isNotBlank() }
+
                     onPost(
                         Job(
-                            id = (existingJob?.id ?: Random.nextInt()).toString(),
+                            id = jobId,
                             title = title,
-                            skills = skills.split(",").map { it.trim() },
-                            experience = experience,
+                            skills = if (skillsList.isEmpty()) listOf("Không yêu cầu") else skillsList,
+                            experience = experience.ifBlank { "Không yêu cầu" },
                             salary = salary,
-                            address = address,
+                            address = address.ifBlank { "Linh hoạt" },
                             company = existingJob?.company ?: "D&D Company",
+                            category = category,
                             gender = gender,
                             age = age,
                             education = education,
@@ -91,19 +113,28 @@ fun JobPostDialog(
         },
         text = {
             Column(modifier = Modifier.fillMaxWidth()) {
+                if (hasError) {
+                    Text(
+                        text = errorMessage,
+                        color = androidx.compose.ui.graphics.Color.Red,
+                        modifier = Modifier.padding(bottom = 8.dp)
+                    )
+                }
+
                 if (step == 1) {
                     OutlinedTextField(
                         value = title,
                         onValueChange = { title = it },
-                        label = { Text("Tiêu đề công việc") },
+                        label = { Text("Tiêu đề công việc *") },
                         modifier = Modifier
                             .fillMaxWidth()
-                            .padding(vertical = 4.dp)
+                            .padding(vertical = 4.dp),
+                        isError = title.isBlank() && hasError
                     )
                     OutlinedTextField(
                         value = skills,
                         onValueChange = { skills = it },
-                        label = { Text("Kỹ năng ") },
+                        label = { Text("Kỹ năng (phân cách bằng dấu phẩy)") },
                         modifier = Modifier
                             .fillMaxWidth()
                             .padding(vertical = 4.dp)
@@ -117,8 +148,8 @@ fun JobPostDialog(
                             .padding(vertical = 4.dp)
                     )
                     OutlinedTextField(
-                        value = salary,
-                        onValueChange = { salary = it },
+                        value = salary.toString(),
+                        onValueChange = { salary = it.toInt() },
                         label = { Text("Mức lương") },
                         modifier = Modifier
                             .fillMaxWidth()
@@ -133,6 +164,21 @@ fun JobPostDialog(
                             .padding(vertical = 4.dp)
                     )
                 } else {
+                    DropdownField(
+                        "Loại công việc",
+                        listOf(
+                            "Backend",
+                            "Frontend",
+                            "Fullstack",
+                            "AI",
+                            "Tester",
+                            "Designer",
+                            "Marketing",
+                            "Khác"
+                        ),
+                        category
+                    ) { category = it }
+
                     DropdownField(
                         "Giới tính",
                         listOf("Không yêu cầu", "Nam", "Nữ"),
@@ -163,7 +209,6 @@ fun JobPostDialog(
         }
     )
 }
-
 
 @Composable
 fun DropdownField(

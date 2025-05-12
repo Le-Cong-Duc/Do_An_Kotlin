@@ -189,10 +189,8 @@ fun ChatMessages(
 // hiển thị từng tin nhắn
 @Composable
 fun ChatBox(message: Message) {
-    // xem xét tin nhắn gửi đi có phải là người dùng không
     val isCurrentUser = message.senderId == Firebase.auth.currentUser?.uid
 
-    // nếu là người dùng thì tin nhắn có background màu tím ngược lại là xàm
     val boxColor = if (isCurrentUser) {
         Purple
     } else {
@@ -204,7 +202,7 @@ fun ChatBox(message: Message) {
             .fillMaxWidth()
             .padding(vertical = 4.dp, horizontal = 8.dp),
     ) {
-        // nếu là người dùng thì tin nhắn bên trái
+
         val alignment = if (isCurrentUser) {
             Alignment.CenterEnd
         } else {
@@ -218,7 +216,7 @@ fun ChatBox(message: Message) {
                 .align(alignment),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            // nếu không phải người dùng thì sẽ hiển thị icon (avatar)
+
             if (!isCurrentUser) {
                 Image(
                     painter = painterResource(id = R.drawable.account),
@@ -228,14 +226,12 @@ fun ChatBox(message: Message) {
                 Spacer(modifier = Modifier.width(8.dp))
             }
 
-            //kiểm tra xem tin nhắn có phải là ảnh không nếu là ảnh thì hiển thị Image còn không thì là Text
             Box(
                 modifier = Modifier
                     .padding(16.dp)
                     .background(color = boxColor, shape = RoundedCornerShape(8.dp))
             ) {
                 if (message.imageUrl != null) {
-                    //AsyncImage : hiển thị hình ảnh dưới dạng url
                     AsyncImage(
                         model = message.imageUrl,
                         contentDescription = null,

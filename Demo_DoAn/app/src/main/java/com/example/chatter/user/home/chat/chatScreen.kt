@@ -145,9 +145,7 @@ fun ChatMessages(
         ) {
 
             IconButton(onClick = {
-                // mở thư viện
                 onImageClicker()
-                // sau khi nhấn tin nhắn hiện tại sẽ dc xóa
                 msg.value = ""
             }) {
                 Icon(imageVector = Icons.Filled.Add, contentDescription = "gallery")

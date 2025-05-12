@@ -71,7 +71,6 @@ fun SignInScreen(navController: NavController) {
                                     password = ""
                                     email = ""
                                 }
-
                                 else -> {
                                     Toast.makeText(
                                         context,

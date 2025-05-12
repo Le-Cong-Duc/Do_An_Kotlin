@@ -29,7 +29,13 @@ import java.util.Calendar
 fun ProfileEditForm(viewModel: ProfileViewModel) {
     val profile = viewModel.userProfile.value
 
-    val birth = LocalDate.parse(profile.birthDate)
+    val birth = profile.birthDate?.takeIf { it.isNotBlank() }?.let {
+        try {
+            LocalDate.parse(it)
+        } catch (e: Exception) {
+            LocalDate.now()
+        }
+    } ?: LocalDate.now()
     val dateState = remember { mutableStateOf(birth ?: LocalDate.now()) }
 
     val calendar = Calendar.getInstance().apply {

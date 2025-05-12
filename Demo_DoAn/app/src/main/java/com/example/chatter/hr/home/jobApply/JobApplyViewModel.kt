@@ -1,4 +1,4 @@
-package com.example.chatter.user.home.myjob
+package com.example.chatter.hr.home.jobApply
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -13,20 +13,20 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
 
-class MyJobViewModel : ViewModel() {
-    private val _userCv = MutableStateFlow<List<UserCV>>(emptyList())
-    val userCv = _userCv.asStateFlow()
+class JobApplyViewModel : ViewModel() {
+    private val _userCvs = MutableStateFlow<List<UserCV>>(emptyList())
+    val userCV = _userCvs.asStateFlow()
 
     private val _job = MutableStateFlow<Map<String, Job>>(emptyMap())
     val job = _job.asStateFlow()
+
+    val dbRef = FirebaseDatabase.getInstance().getReference("usercv")
 
     init {
         getUserCv()
     }
 
     private fun getUserCv() {
-        val dbRef = FirebaseDatabase.getInstance().getReference("usercv")
-
         dbRef.addValueEventListener(object : ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
                 val list = mutableListOf<UserCV>()
@@ -38,7 +38,7 @@ class MyJobViewModel : ViewModel() {
                         list.add(cv)
                     }
                 }
-                _userCv.value = list
+                _userCvs.value = list
 
                 getJob(list)
             }
@@ -74,14 +74,15 @@ class MyJobViewModel : ViewModel() {
         }
     }
 
-    fun deleteCv(CvId: String) {
-        viewModelScope.launch {
-            try {
-                FirebaseDatabase.getInstance().getReference("usercv").child(CvId).removeValue()
-                    .await()
-            } catch (e: Exception) {
-                println(e.message)
-            }
-        }
+    fun updateCvStatus(cvId: String, status: Int) {
+        dbRef.child(cvId).child("status").setValue(status)
+    }
+
+    fun updateCvDate(cvId: String, date: String) {
+        dbRef.child(cvId).child("date").setValue(date)
+    }
+
+    fun updateCvDateInterview(cvId: String, date: String) {
+        dbRef.child(cvId).child("dateInterView").setValue(date)
     }
 }

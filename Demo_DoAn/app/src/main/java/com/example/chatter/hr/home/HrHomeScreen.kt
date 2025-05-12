@@ -1,10 +1,13 @@
 package com.example.chatter.hr.home
 
 
+import android.os.Build
+import androidx.annotation.RequiresApi
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Person
+import androidx.compose.material.icons.filled.Work
 import androidx.compose.material.icons.sharp.Chat
 import androidx.compose.material3.Icon
 import androidx.compose.material3.NavigationBar
@@ -20,13 +23,16 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.navigation.NavController
 import com.example.chatter.hr.home.chat_hr.HomeChatScreen_Hr
+import com.example.chatter.hr.home.jobApply.HomeJobApply
 import com.example.chatter.hr.home.listjob.HrHomeScreen
 import com.example.chatter.hr.home.profile.HrMainProfile
 
+@RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun HrMainScreen(navController: NavController) {
     val items = listOf(
         HrBottomNavItem("Home", Icons.Filled.Home),
+        HrBottomNavItem("Apply Job", Icons.Filled.Work),
         HrBottomNavItem("Chat", Icons.Sharp.Chat),
         HrBottomNavItem("Profile", Icons.Filled.Person)
     )
@@ -49,8 +55,9 @@ fun HrMainScreen(navController: NavController) {
     ) { innerPadding ->
         when (selectedItemIndex) {
             0 -> HrHomeScreen(modifier = Modifier.padding(innerPadding))
-            1 -> HomeChatScreen_Hr(navController = navController)
-            2 -> HrMainProfile(navController = navController)
+            1 -> HomeJobApply(navController = navController)
+            2 -> HomeChatScreen_Hr(navController = navController)
+            3 -> HrMainProfile(navController = navController)
         }
     }
 }

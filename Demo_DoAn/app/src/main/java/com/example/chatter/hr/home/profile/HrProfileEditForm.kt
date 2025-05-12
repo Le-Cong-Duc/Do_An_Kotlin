@@ -1,5 +1,7 @@
 package com.example.chatter.hr.home.profile
 
+import android.os.Build
+import androidx.annotation.RequiresApi
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -16,7 +18,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 
-
+@RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun HrProfileEditForm(viewModel: HrProfileViewModel) {
     val profile = viewModel.companyProfile.value
@@ -74,11 +76,21 @@ fun HrProfileEditForm(viewModel: HrProfileViewModel) {
                 )
 
                 viewModel.updateProfile(updatedProfile)
+
                 viewModel.saveProfile()
             },
             modifier = Modifier.fillMaxWidth()
         ) {
             Text("Xác nhận")
+        }
+
+        Spacer(modifier = Modifier.height(8.dp))
+
+        Button(
+            onClick = { viewModel.editing },
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            Text("Hủy")
         }
     }
 }

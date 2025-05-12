@@ -3,81 +3,78 @@ package com.example.chatter.hr.home.listjob
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.chatter.model.Job
+import com.google.firebase.database.DataSnapshot
+import com.google.firebase.database.DatabaseError
+import com.google.firebase.database.FirebaseDatabase
+import com.google.firebase.database.ValueEventListener
+import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.callbackFlow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.tasks.await
+import java.util.UUID
 
 class HrJobViewModel : ViewModel() {
-    private val repository = HrJobRepository()
-
     private val _jobs = MutableStateFlow<List<Job>>(emptyList())
-    val jobs: StateFlow<List<Job>> = _jobs
+    val job = _jobs.asStateFlow()
 
-    private val _isLoading = MutableStateFlow(false)
-    val isLoading: StateFlow<Boolean> = _isLoading
+    private val dbRef = FirebaseDatabase.getInstance().getReference("job")
 
-    private val _errorMessage = MutableStateFlow<String?>(null)
-    val errorMessage: StateFlow<String?> = _errorMessage
-
-    init {
-        loadJobs()
-    }
-
-    private fun loadJobs() {
+    fun getJob() {
         viewModelScope.launch {
-            _isLoading.value = true
-            repository.getAllJobs()
-                .catch { e ->
-                    _errorMessage.value = e.message
-                    _isLoading.value = false
+            callbackFlow {
+                val listener = object : ValueEventListener {
+                    override fun onDataChange(snapshot: DataSnapshot) {
+                        val jobs = mutableListOf<Job>()
+                        for (child in snapshot.children) {
+                            child.getValue(Job::class.java)?.let {
+                                jobs.add(it)
+                            }
+                        }
+                        trySend(jobs)
+                    }
+
+                    override fun onCancelled(error: DatabaseError) {
+                        close(error.toException())
+                    }
                 }
-                .collect { jobsList ->
-                    _jobs.value = jobsList
-                    _isLoading.value = false
+
+                dbRef.addValueEventListener(listener)
+
+                awaitClose {
+                    dbRef.removeEventListener(listener)
                 }
+            }.collect { jobsList ->
+                _jobs.value = jobsList
+            }
         }
     }
 
     fun addJob(job: Job) {
         viewModelScope.launch {
-            _isLoading.value = true
-            repository.saveJob(job)
-                .onSuccess {
-                    _errorMessage.value = null
-                }
-                .onFailure { e ->
-                    _errorMessage.value = "Không thể đăng tin: ${e.message}"
-                }
-            _isLoading.value = false
+            try {
+                val jobId = if (job.id.isNullOrBlank()) UUID.randomUUID().toString() else job.id
+
+                val updatedJob = job.copy(id = jobId)
+
+                dbRef.child(jobId).setValue(updatedJob).await()
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }
         }
     }
 
-    fun updateJob(job: Job) {
+    fun deleteJob(jobId: String) {
         viewModelScope.launch {
-            _isLoading.value = true
-            repository.saveJob(job)
-                .onSuccess {
-                    _errorMessage.value = null
-                }
-                .onFailure { e ->
-                    _errorMessage.value = "Không thể cập nhật tin: ${e.message}"
-                }
-            _isLoading.value = false
-        }
-    }
-
-    fun deleteJob(jobId: String?) {
-        viewModelScope.launch {
-            _isLoading.value = true
-            repository.deleteJob(jobId)
-                .onSuccess {
-                    _errorMessage.value = null
-                }
-                .onFailure { e ->
-                    _errorMessage.value = "Không thể xóa tin: ${e.message}"
-                }
-            _isLoading.value = false
+            try {
+                dbRef.child(jobId).removeValue().await()
+            } catch (e: Exception) {
+                // Xử lý lỗi nếu cần
+                e.printStackTrace()
+            }
         }
     }
 }

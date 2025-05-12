@@ -3,27 +3,55 @@ package com.example.chatter.user.home.listjob
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.chatter.model.Job
+import com.google.firebase.database.DataSnapshot
+import com.google.firebase.database.DatabaseError
+import com.google.firebase.database.FirebaseDatabase
+import com.google.firebase.database.ValueEventListener
+import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.callbackFlow
 import kotlinx.coroutines.launch
 
 class JobViewModel : ViewModel() {
-    private val repository = JobRepository()
-
     private val _jobs = MutableStateFlow<List<Job>>(emptyList())
-    val jobs: StateFlow<List<Job>> = _jobs
+    val jobs = _jobs.asStateFlow()
+
+    private val dbRef = FirebaseDatabase.getInstance().getReference("job")
 
 
     init {
-        loadJobs()
+        getJob()
     }
 
-    private fun loadJobs() {
+    private fun getJob() {
         viewModelScope.launch {
-            repository.getAllJobs()
-                .collect { jobsList ->
-                    _jobs.value = jobsList
+            callbackFlow {
+                val listener = object : ValueEventListener {
+                    override fun onDataChange(snapshot: DataSnapshot) {
+                        val jobs = mutableListOf<Job>()
+                        for (child in snapshot.children) {
+                            child.getValue(Job::class.java)?.let {
+                                jobs.add(it)
+                            }
+                        }
+                        trySend(jobs)
+                    }
+
+                    override fun onCancelled(error: DatabaseError) {
+                        close(error.toException())
+                    }
                 }
+
+                dbRef.addValueEventListener(listener)
+
+                awaitClose {
+                    dbRef.removeEventListener(listener)
+                }
+            }.collect { jobsList ->
+                _jobs.value = jobsList
+            }
         }
     }
 

@@ -3,6 +3,8 @@ package com.example.chatter.user.home.myjob
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -17,21 +19,16 @@ import com.example.chatter.model.Job
 import com.example.chatter.model.UserCV
 import com.google.firebase.auth.FirebaseAuth
 
-enum class JobStatus {
-    APPLIED,
-    INTERVIEW,
-    HIRED
-}
 
 @Composable
 fun MyJobsScreen(modifier: Modifier) {
     val viewModel: MyJobViewModel = viewModel()
-    val userCv by viewModel.userCVs.collectAsState()
-    val jobs by viewModel.jobs.collectAsState()
+    val userCv by viewModel.userCv.collectAsState()
+    val jobs by viewModel.job.collectAsState()
 
     val currentUser = FirebaseAuth.getInstance().currentUser?.uid
 
-    var selectedStatus by remember { mutableStateOf(JobStatus.APPLIED) }
+    var selectStatus by remember { mutableStateOf(JobStatus.APPLIED) }
 
     Column(modifier = Modifier.padding(16.dp)) {
         Text("My jobs", fontWeight = FontWeight.Bold)
@@ -39,14 +36,14 @@ fun MyJobsScreen(modifier: Modifier) {
         Spacer(modifier = Modifier.height(12.dp))
 
         Row(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
-            StatusChip("Đã ứng tuyển", selectedStatus == JobStatus.APPLIED) {
-                selectedStatus = JobStatus.APPLIED
+            StatusItem("Đã ứng tuyển", selectStatus == JobStatus.APPLIED) {
+                selectStatus = JobStatus.APPLIED
             }
-            StatusChip("Nhận phỏng vấn", selectedStatus == JobStatus.INTERVIEW) {
-                selectedStatus = JobStatus.INTERVIEW
+            StatusItem("Nhận phỏng vấn", selectStatus == JobStatus.INTERVIEW) {
+                selectStatus = JobStatus.INTERVIEW
             }
-            StatusChip("Được nhận", selectedStatus == JobStatus.HIRED) {
-                selectedStatus = JobStatus.HIRED
+            StatusItem("Được nhận", selectStatus == JobStatus.HIRED) {
+                selectStatus = JobStatus.HIRED
             }
         }
 
@@ -54,40 +51,16 @@ fun MyJobsScreen(modifier: Modifier) {
 
         if (currentUser != null) {
             JobCardList(
-                status = selectedStatus, userCvs = userCv, jobs = jobs, currentUser,
+                status = selectStatus, userCvs = userCv, jobs = jobs, currentUser,
                 viewModel = viewModel
             )
         }
     }
 }
 
-@Composable
-fun JobCardList(
-    status: JobStatus,
-    userCvs: List<UserCV>,
-    jobs: Map<String, Job>,
-    curentUser: String,
-    viewModel: MyJobViewModel
-) {
-    val filtered = userCvs.filter {
-        when (status) {
-            JobStatus.APPLIED -> it.status == 1
-            JobStatus.INTERVIEW -> it.status == 2
-            JobStatus.HIRED -> it.status == 3
-        }
-    }
-
-    Column {
-        filtered.forEach { cv ->
-            val job = jobs[cv.jobId]
-            JobCard(cv, job, status, curentUser, viewModel)
-            Spacer(modifier = Modifier.height(10.dp))
-        }
-    }
-}
 
 @Composable
-fun StatusChip(text: String, selected: Boolean, onClick: () -> Unit) {
+fun StatusItem(text: String, selected: Boolean, onClick: () -> Unit) {
     val backgroundColor = if (selected) Color(0xFFCCF7FF) else Color.LightGray
     val textColor = if (selected) Color.Black else Color.Black
 
@@ -107,6 +80,37 @@ fun StatusChip(text: String, selected: Boolean, onClick: () -> Unit) {
         )
     }
 }
+
+@Composable
+fun JobCardList(
+    status: JobStatus,
+    userCvs: List<UserCV>,
+    jobs: Map<String, Job>,
+    curentUser: String,
+    viewModel: MyJobViewModel
+) {
+    val filtered = userCvs.filter {
+        when (status) {
+            JobStatus.APPLIED -> it.status == 1
+            JobStatus.INTERVIEW -> it.status == 2
+            JobStatus.HIRED -> it.status == 3
+        }
+    }
+
+    LazyColumn(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(bottom = 80.dp)
+    )
+    {
+        items(filtered) { cv ->
+            val job = jobs[cv.jobId]
+            JobCard(cv, job, status, curentUser, viewModel)
+            Spacer(modifier = Modifier.height(10.dp))
+        }
+    }
+}
+
 
 @Composable
 fun JobCard(
@@ -139,9 +143,10 @@ fun JobCard(
 
             Spacer(modifier = Modifier.height(8.dp))
 
-            val skillsToShow = if (job?.skills?.isNotEmpty() == true) job.skills else cv.skills
+            val showSkill = job?.skills
+
             Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                skillsToShow.forEach {
+                showSkill?.forEach {
                     Text(
                         text = it ?: "",
                         modifier = Modifier
@@ -154,7 +159,6 @@ fun JobCard(
 
             Spacer(modifier = Modifier.height(8.dp))
 
-            // Application status badge
             Box(
                 modifier = Modifier
                     .background(Color(0xFFE6F7FF), RoundedCornerShape(4.dp))
@@ -170,7 +174,7 @@ fun JobCard(
             Spacer(modifier = Modifier.height(8.dp))
 
             Button(
-                onClick = { viewModel.deleteCV(cv.id) },
+                onClick = { viewModel.deleteCv(cv.id) },
                 colors = ButtonDefaults.buttonColors(containerColor = Color.Red)
             ) {
                 Text("Xoá CV", color = Color.White)
@@ -192,7 +196,7 @@ fun JobCard(
             JobStatus.INTERVIEW -> {
                 Column {
                     Text(
-                        "Ngày phỏng vấn: dd/MM/yyyy",
+                        "Ngày phỏng vấn: ${cv.dateInterView}",
                         fontSize = 12.sp,
                         color = Color(0xFFEFB700)
                     )
@@ -211,9 +215,16 @@ fun JobCard(
                         fontSize = 12.sp,
                         color = Color(0xFF006400)
                     )
-                    Text("Ngày đi làm: ???", fontSize = 12.sp)
+                    Text("Ngày đi làm: ${cv.date}", fontSize = 12.sp)
                 }
             }
         }
     }
 }
+
+enum class JobStatus {
+    APPLIED,
+    INTERVIEW,
+    HIRED
+}
+

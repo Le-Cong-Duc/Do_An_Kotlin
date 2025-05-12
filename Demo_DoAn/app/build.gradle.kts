@@ -87,4 +87,7 @@ dependencies {
     implementation ("io.ktor:ktor-client-android:$ktor_version")
     implementation ("io.ktor:ktor-client-core:$ktor_version")
     implementation ("io.ktor:ktor-utils:$ktor_version")
+
+    implementation("com.google.firebase:firebase-firestore-ktx")
+
 }

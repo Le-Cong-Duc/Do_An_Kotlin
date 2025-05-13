@@ -45,7 +45,7 @@ fun HomeChatScreen_Hr(navController: NavController) {
     val users = viewModel.user.collectAsState()
 
     Scaffold(
-        containerColor = Color.Black
+        containerColor = Color(0xFFF3F9FC)
     ) {
         Box(
             modifier = Modifier
@@ -56,7 +56,7 @@ fun HomeChatScreen_Hr(navController: NavController) {
                 //Tiêu đề danh sách
                 item {
                     Text(
-                        text = "Messages", color = Color.Gray,
+                        text = "Messages",color = Color(0xFF1B4965),
                         style = TextStyle(fontSize = 20.sp),
                         modifier = Modifier.padding(16.dp)
                     )
@@ -71,12 +71,12 @@ fun HomeChatScreen_Hr(navController: NavController) {
                         modifier = Modifier
                             .fillMaxWidth()
                             .padding(horizontal = 16.dp, vertical = 8.dp)
-                            .background(Color.Black)
+                            .background(Color(0xFFE2ECF1))
                             .clip(RoundedCornerShape(40.dp)),
                         textStyle = TextStyle(color = Color.LightGray),
                         colors = TextFieldDefaults.colors().copy(
-                            focusedContainerColor = DarkGrey,
-                            unfocusedContainerColor = DarkGrey,
+                            focusedContainerColor = Color.Gray,
+                            unfocusedContainerColor = Color(0xFFB1DCEF),
                             focusedTextColor = Color.Gray,
                             unfocusedTextColor = Color.Gray,
                             focusedPlaceholderColor = Color.Gray,
@@ -119,7 +119,7 @@ fun Avatar(userName: String, modifier: Modifier, onclick: () -> Unit) {
             modifier = Modifier
                 .fillMaxWidth()
                 .clip(RoundedCornerShape(16.dp))
-                .background(DarkGrey),
+                .background(Color.White, RoundedCornerShape(12.dp)),
             verticalAlignment = Alignment.CenterVertically
         ) {
             Box(
@@ -127,12 +127,13 @@ fun Avatar(userName: String, modifier: Modifier, onclick: () -> Unit) {
                     .padding(16.dp)
                     .size(70.dp)
                     .clip(CircleShape)
-                    .background(Color.White.copy(alpha = 0.3f))
+                    .background(Color(0xFF1B4965)),
+                contentAlignment = Alignment.Center
             ) {
                 Text(
                     text = userName[0].uppercase(),
                     color = Color.White,
-                    style = TextStyle(fontSize = 35.sp),
+                    style = TextStyle(fontSize = 25.sp),
                     textAlign = TextAlign.Center,
                     modifier = Modifier.align(Alignment.Center)
                 )
@@ -141,7 +142,8 @@ fun Avatar(userName: String, modifier: Modifier, onclick: () -> Unit) {
             Text(
                 text = userName,
                 modifier = Modifier.padding(8.dp),
-                color = Color.White
+                fontSize = 16.sp,
+                color = Color(0xFF102542)
             )
         }
     }

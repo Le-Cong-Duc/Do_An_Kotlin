@@ -120,7 +120,7 @@ fun JobCard(
     currentUser: String,
     viewModel: MyJobViewModel
 ) {
-    val backgroundColor = Color(0xFFCCF7FF)
+    val backgroundColor = Color.LightGray
 
     if (currentUser == cv.userId) {
         Column(
@@ -161,7 +161,7 @@ fun JobCard(
 
             Box(
                 modifier = Modifier
-                    .background(Color(0xFFE6F7FF), RoundedCornerShape(4.dp))
+                    .background(Color.White, RoundedCornerShape(4.dp))
                     .padding(horizontal = 6.dp, vertical = 2.dp)
             ) {
                 Text(
@@ -172,53 +172,48 @@ fun JobCard(
             }
 
             Spacer(modifier = Modifier.height(8.dp))
+            when (status) {
+                JobStatus.APPLIED -> {
+                    Text(
+                        "Ứng tuyển vào: ${cv.jobTitle}",
+                        fontSize = 13.sp,
+                        fontWeight = FontWeight.Medium
+                    )
+                }
 
-            Button(
-                onClick = { viewModel.deleteCv(cv.id) },
-                colors = ButtonDefaults.buttonColors(containerColor = Color.Red)
-            ) {
-                Text("Xoá CV", color = Color.White)
+                JobStatus.INTERVIEW -> {
+                    Column {
+                        Text(
+                            "Ngày phỏng vấn: ${cv.dateInterView}",
+                            fontSize = 12.sp,
+                            color = Color(0xFFEFB700)
+                        )
+                        Text(
+                            "Địa chỉ: ${job?.address ?: "???"}",
+                            fontSize = 12.sp,
+                            color = Color.Green
+                        )
+                    }
+                }
+
+                JobStatus.HIRED -> {
+                    Column {
+                        Text(
+                            "Chúc mừng bạn đã được nhận!",
+                            fontSize = 12.sp,
+                            color = Color(0xFF006400)
+                        )
+                        Text("Ngày đi làm: ${cv.date}", fontSize = 12.sp)
+                    }
+                }
             }
+
         }
 
 
         Spacer(modifier = Modifier.height(8.dp))
 
-        when (status) {
-            JobStatus.APPLIED -> {
-                Text(
-                    "Ứng tuyển vào: ${cv.jobTitle}",
-                    fontSize = 13.sp,
-                    fontWeight = FontWeight.Medium
-                )
-            }
 
-            JobStatus.INTERVIEW -> {
-                Column {
-                    Text(
-                        "Ngày phỏng vấn: ${cv.dateInterView}",
-                        fontSize = 12.sp,
-                        color = Color(0xFFEFB700)
-                    )
-                    Text(
-                        "Địa chỉ: ${job?.address ?: "???"}",
-                        fontSize = 12.sp,
-                        color = Color.Green
-                    )
-                }
-            }
-
-            JobStatus.HIRED -> {
-                Column {
-                    Text(
-                        "Chúc mừng bạn đã được nhận!",
-                        fontSize = 12.sp,
-                        color = Color(0xFF006400)
-                    )
-                    Text("Ngày đi làm: ${cv.date}", fontSize = 12.sp)
-                }
-            }
-        }
     }
 }
 

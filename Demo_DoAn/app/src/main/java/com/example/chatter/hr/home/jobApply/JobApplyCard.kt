@@ -104,7 +104,7 @@ fun JobApplyCard(
                     .fillMaxWidth()
                     .padding(vertical = 8.dp, horizontal = 16.dp),
                 shape = RoundedCornerShape(16.dp),
-                colors = CardDefaults.cardColors(containerColor = Color(0xFFE6F7EC)),
+                colors = CardDefaults.cardColors(containerColor = Color(0xFFF3C3D1)),
                 elevation = CardDefaults.cardElevation(4.dp)
             ) {
                 Column(modifier = Modifier.padding(16.dp)) {
@@ -174,7 +174,7 @@ fun JobApplyCard(
                     .fillMaxWidth()
                     .padding(vertical = 8.dp, horizontal = 16.dp),
                 shape = RoundedCornerShape(16.dp),
-                colors = CardDefaults.cardColors(containerColor = Color(0xFFE9F7FF)),
+                colors = CardDefaults.cardColors(containerColor = Color(0xFFE6FFE6)),
                 elevation = CardDefaults.cardElevation(4.dp)
             ) {
                 Column(modifier = Modifier.padding(16.dp)) {

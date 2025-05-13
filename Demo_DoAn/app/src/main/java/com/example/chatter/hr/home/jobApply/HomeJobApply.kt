@@ -80,7 +80,7 @@ fun HomeJobApply(navController: NavController) {
 
 @Composable
 fun StatusItem(text: String, selected: Boolean, onClick: () -> Unit) {
-    val backgroundColor = if (selected) Color(0xFFCCF7FF) else Color.LightGray
+    val backgroundColor = if (selected) Color(0xFFB1DCEF) else Color.LightGray
     val textColor = if (selected) Color.Black else Color.DarkGray
 
     Surface(

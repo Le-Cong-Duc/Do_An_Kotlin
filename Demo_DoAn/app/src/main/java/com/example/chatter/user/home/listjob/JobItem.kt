@@ -39,7 +39,8 @@ fun JobItem(job: Job, onApplyClick: () -> Unit, onDetailClick: () -> Unit) {
             .padding(vertical = 8.dp)
             .clickable { onDetailClick() },
         elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
-        shape = RoundedCornerShape(8.dp)
+        shape = RoundedCornerShape(8.dp),
+        colors = CardDefaults.cardColors(containerColor = Color.White)
     ) {
         Column(
             modifier = Modifier.padding(16.dp)

@@ -14,6 +14,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -35,6 +36,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
@@ -54,7 +56,7 @@ import com.google.firebase.auth.auth
 fun ChatScreen(navController: NavController, userId: String, userName: String) {
 
     Scaffold(
-        containerColor = Color.Black
+        containerColor =  Color(0xFFF9F9FB)
     ) {
         // Tạo viewmodel thông qua hilt từ ChatViewModel
         val viewModel: ChatViewModel = hiltViewModel()
@@ -129,7 +131,7 @@ fun ChatMessages(
         ) {
             //Tên người dùng
             item {
-                Avatar(userName = userName, Modifier) { }
+                Avatar(userName = userName,  modifier = Modifier.padding(12.dp)) { }
             }
             // danh sách tin nhắn
             items(messages) { message ->
@@ -139,7 +141,7 @@ fun ChatMessages(
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .background(Color.LightGray)
+                .background(Color.White)
                 .padding(8.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
@@ -156,20 +158,22 @@ fun ChatMessages(
                 value = msg.value,
                 // cập nhật giá trị người dùng thay đổi
                 onValueChange = { msg.value = it },
-                modifier = Modifier.weight(1f),
+                modifier = Modifier.weight(1f)
+                    .padding(horizontal = 8.dp)
+                    .background(Color(0xFF1B4965)),
                 placeholder = { Text(text = "Type a message") },
                 // làm cho bàn phím ẩn đi
                 keyboardOptions = KeyboardOptions.Default.copy(imeAction = ImeAction.Done),
                 keyboardActions = KeyboardActions(onDone = {
                     hideKeyBoardController?.hide()
                 }),
-                colors = TextFieldDefaults.colors().copy(
-                    focusedContainerColor = Color.LightGray,
-                    unfocusedContainerColor = Color.LightGray,
-                    focusedTextColor = Color.White,
-                    unfocusedTextColor = Color.White,
-                    focusedPlaceholderColor = Color.White,
-                    unfocusedPlaceholderColor = Color.White
+                colors = TextFieldDefaults.colors(
+                    focusedContainerColor = Color(0xFFF2F2F2),
+                    unfocusedContainerColor = Color(0xFFF2F2F2),
+                    focusedIndicatorColor = Color.Transparent,
+                    unfocusedIndicatorColor = Color.Transparent,
+                    focusedTextColor = Color.Black,
+                    unfocusedTextColor = Color.Black
                 )
             )
 
@@ -189,7 +193,8 @@ fun ChatMessages(
 fun ChatBox(message: Message) {
     // xem xét tin nhắn gửi đi có phải là người dùng không
     val isCurrentUser = message.senderId == Firebase.auth.currentUser?.uid
-
+    val backgroundColor = if (isCurrentUser) Color(0xFF007BFF) else Color(0xFFEDEDED)
+    val textColor = if (isCurrentUser) Color.White else Color.Black
     // nếu là người dùng thì tin nhắn có background màu tím ngược lại là xàm
     val boxColor = if (isCurrentUser) {
         Purple
@@ -229,21 +234,24 @@ fun ChatBox(message: Message) {
             //kiểm tra xem tin nhắn có phải là ảnh không nếu là ảnh thì hiển thị Image còn không thì là Text
             Box(
                 modifier = Modifier
-                    .padding(16.dp)
-                    .background(color = boxColor, shape = RoundedCornerShape(8.dp))
+                    .background(backgroundColor, RoundedCornerShape(16.dp))
+                    .padding(12.dp)
+                    .widthIn(max = 250.dp)
             ) {
                 if (message.imageUrl != null) {
                     //AsyncImage : hiển thị hình ảnh dưới dạng url
                     AsyncImage(
                         model = message.imageUrl,
                         contentDescription = null,
-                        modifier = Modifier.size(200.dp),
+                        modifier = Modifier
+                            .size(180.dp)
+                            .clip(RoundedCornerShape(12.dp)),
                         contentScale = ContentScale.Crop
                     )
                 } else {
                     Text(
                         text = message.message?.trim() ?: "",
-                        color = Color.White
+                        color = textColor
                     )
                 }
             }

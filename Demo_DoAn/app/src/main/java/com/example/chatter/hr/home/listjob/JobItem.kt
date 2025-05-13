@@ -38,7 +38,7 @@ fun JobItem(
             .clickable(onClick = onCardClick),
         elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
         shape = RoundedCornerShape(16.dp),
-        colors = CardDefaults.cardColors(containerColor = Color(0xFFECECEC))
+        colors = CardDefaults.cardColors(containerColor = Color.White)
     ) {
         Column(modifier = Modifier.padding(16.dp)) {
             Row(
@@ -48,7 +48,7 @@ fun JobItem(
             ) {
                 Column(modifier = Modifier.weight(1f)) {
                     job.title?.let { Text(text = it, fontWeight = FontWeight.Bold) }
-                    job.company?.let { Text(text = it, color = Color.Gray) }
+                    job.company?.let { Text(text = it, color = Color(0xFF03DAC5)) }
                     Text(text = "Lương: ${job.salary}")
                     Text(text = "Kinh nghiệm: ${job.experience}")
                     Text(text = "Địa điểm: ${job.address}")

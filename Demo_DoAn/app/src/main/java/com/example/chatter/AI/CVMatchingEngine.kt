@@ -9,9 +9,14 @@ object CVMatchingEngine {
         var score = 0.0
 
         val commonSkills = cv.skills.intersect(job.skills ?: emptyList())
+
         val skillScore = if ((job.skills?.size ?: 0) > 0)
             (commonSkills.size.toDouble() / (job.skills?.size ?: 1)) * 40 else 0.0
         score += skillScore
+
+        println("Job skills: ${job.skills}")
+        println("CV skills: ${cv.skills}")
+        println("Common skills: $commonSkills → Skill Score: $skillScore")
 
         if (cv.experience.isNotBlank() && job.experience?.isNotBlank() == true) {
             if (cv.experience.equals(job.experience, ignoreCase = true)) {
@@ -32,14 +37,16 @@ object CVMatchingEngine {
             if (cv.education.equals(job.education, ignoreCase = true)) {
                 score += 15
             } else if (cv.education.contains(job.education ?: "", ignoreCase = true) ||
-                (job.education ?: "").contains(cv.education, ignoreCase = true)) {
+                (job.education ?: "").contains(cv.education, ignoreCase = true)
+            ) {
                 score += 10
             }
         }
 
         if (!job.title.isNullOrBlank() && cv.jobTitle.isNotBlank()) {
             if (cv.jobTitle.contains(job.title, ignoreCase = true) ||
-                job.title.contains(cv.jobTitle, ignoreCase = true)) {
+                job.title.contains(cv.jobTitle, ignoreCase = true)
+            ) {
                 score += 15
             }
         }
@@ -47,10 +54,8 @@ object CVMatchingEngine {
         val roundedScore = "%.2f".format(score).toDouble()
 
         return MatchResult(
-            cvId = cv.id,
-            jobId = job.id ?: "",
+            userCV = cv,
             score = roundedScore,
-            cv = cv
         )
     }
 

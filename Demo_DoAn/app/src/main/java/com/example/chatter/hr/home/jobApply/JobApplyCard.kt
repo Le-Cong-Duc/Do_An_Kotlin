@@ -35,13 +35,14 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.chatter.AI.MatchResult
 import com.example.chatter.model.Job
 import com.example.chatter.model.UserCV
 
 
 @Composable
 fun JobApplyCard(
-    cv: UserCV,
+    cv: MatchResult,
     job: Job?,
     status: JobStatus,
     onReject: () -> Unit,
@@ -70,10 +71,11 @@ fun JobApplyCard(
                         job.title?.let { Text(it, fontSize = 18.sp, fontWeight = FontWeight.Bold) }
                     }
                     Spacer(modifier = Modifier.height(8.dp))
-                    Text("👤 ${cv.name}", fontSize = 14.sp)
-                    Text("📞 SĐT: ${cv.phone ?: "--"}", fontSize = 14.sp)
-                    Text("💼 Kinh nghiệm: ${cv.experience ?: "--"}", fontSize = 14.sp)
-                    Text("🛠 Kỹ năng: ${cv.skills.joinToString()}", fontSize = 14.sp)
+                    Text("👤 ${cv.userCV.name}", fontSize = 14.sp)
+                    Text("📞 SĐT: ${cv.userCV.phone ?: "--"}", fontSize = 14.sp)
+                    Text("💼 Kinh nghiệm: ${cv.userCV.experience ?: "--"}", fontSize = 14.sp)
+                    Text("🛠 Kỹ năng: ${cv.userCV.skills.joinToString()}", fontSize = 14.sp)
+                    Text("⭐ Điểm phù hợp: ${"%.2f".format(cv.score)}", color = Color(0xFF0077B6))
 
                     Spacer(modifier = Modifier.height(12.dp))
                     Row(
@@ -110,16 +112,16 @@ fun JobApplyCard(
                         job.title?.let { Text(it, fontSize = 18.sp, fontWeight = FontWeight.Bold) }
                     }
                     Spacer(modifier = Modifier.height(8.dp))
-                    Text("👤 ${cv.name}", fontWeight = FontWeight.Bold, fontSize = 16.sp)
+                    Text("👤 ${cv.userCV.name}", fontWeight = FontWeight.Bold, fontSize = 16.sp)
                     Spacer(modifier = Modifier.height(8.dp))
-                    Text("💼 Kinh nghiệm: ${cv.experience ?: "--"}", fontSize = 14.sp)
-                    Text("🛠 ${cv.skills.joinToString()}", fontSize = 14.sp)
+                    Text("💼 Kinh nghiệm: ${cv.userCV.experience ?: "--"}", fontSize = 14.sp)
+                    Text("🛠 ${cv.userCV.skills.joinToString()}", fontSize = 14.sp)
 
                     Spacer(modifier = Modifier.height(8.dp))
                     Text(
-                        text = cv.dateInterView?.let { "📅 Ngày phỏng vấn: $it" }
+                        text = cv.userCV.dateInterView?.let { "📅 Ngày phỏng vấn: $it" }
                             ?: "📅 Chưa chọn ngày phỏng vấn",
-                        color = if (cv.dateInterView == null) Color.Red else Color.Black,
+                        color = if (cv.userCV.dateInterView == null) Color.Red else Color.Black,
                         fontSize = 14.sp
                     )
                     Spacer(modifier = Modifier.height(8.dp))
@@ -180,14 +182,14 @@ fun JobApplyCard(
                         job.title?.let { Text(it, fontSize = 18.sp, fontWeight = FontWeight.Bold) }
                     }
                     Spacer(modifier = Modifier.height(8.dp))
-                    Text("👤 ${cv.name}", fontWeight = FontWeight.Bold, fontSize = 16.sp)
+                    Text("👤 ${cv.userCV.name}", fontWeight = FontWeight.Bold, fontSize = 16.sp)
                     Spacer(modifier = Modifier.height(8.dp))
-                    Text("🛠 ${cv.skills.joinToString()}", fontSize = 14.sp)
+                    Text("🛠 ${cv.userCV.skills.joinToString()}", fontSize = 14.sp)
 
                     Spacer(modifier = Modifier.height(8.dp))
                     Text(
-                        text = cv.date?.let { "📅 Ngày đi làm: $it" } ?: "📅 Chưa chọn ngày đi làm",
-                        color = if (cv.date == null) Color.Red else Color.Black,
+                        text = cv.userCV.date?.let { "📅 Ngày đi làm: $it" } ?: "📅 Chưa chọn ngày đi làm",
+                        color = if (cv.userCV.date == null) Color.Red else Color.Black,
                         fontSize = 14.sp
                     )
 

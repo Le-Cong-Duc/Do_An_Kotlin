@@ -2,6 +2,8 @@ package com.example.chatter.hr.home.jobApply
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.chatter.AI.CVMatchingEngine
+import com.example.chatter.AI.MatchResult
 import com.example.chatter.model.Job
 import com.example.chatter.model.UserCV
 import com.google.firebase.database.DataSnapshot
@@ -20,10 +22,13 @@ class JobApplyViewModel : ViewModel() {
     private val _job = MutableStateFlow<Map<String, Job>>(emptyMap())
     val job = _job.asStateFlow()
 
-    val dbRef = FirebaseDatabase.getInstance().getReference("usercv")
+    private val _matchResults = MutableStateFlow<List<MatchResult>>(emptyList())
+    val matchResults = _matchResults.asStateFlow()
+
+    private val dbRef = FirebaseDatabase.getInstance().getReference("usercv")
 
     init {
-        getUserCv()
+        loadAndMatchCVs()
     }
 
     private fun getUserCv() {
@@ -85,4 +90,47 @@ class JobApplyViewModel : ViewModel() {
     fun updateCvDateInterview(cvId: String, date: String) {
         dbRef.child(cvId).child("dateInterView").setValue(date)
     }
+
+    private fun loadAndMatchCVs() {
+        val jobRef = FirebaseDatabase.getInstance().getReference("job")
+        val cvRef = FirebaseDatabase.getInstance().getReference("usercv")
+
+        jobRef.addValueEventListener(object : ValueEventListener {
+            override fun onDataChange(jobSnapshot: DataSnapshot) {
+                val job = jobSnapshot.getValue(Job::class.java) ?: return
+
+                cvRef.addValueEventListener(object : ValueEventListener {
+                    override fun onDataChange(cvSnapshot: DataSnapshot) {
+                        val cvList = mutableListOf<UserCV>()
+
+                        for (childSnapshot in cvSnapshot.children) {
+                            val cv = childSnapshot.getValue(UserCV::class.java)
+                            if (cv != null) {
+                                cv.id = childSnapshot.key ?: ""
+                                cvList.add(cv)
+                            }
+                        }
+
+                        viewModelScope.launch {
+                            try {
+                                val results = CVMatchingEngine.matchMultipleCVs(cvList, job)
+                                _matchResults.value = results
+                            } catch (e: Exception) {
+                                println("Matching error: ${e.message}")
+                            }
+                        }
+                    }
+
+                    override fun onCancelled(error: DatabaseError) {
+                        println("CV loading cancelled: ${error.message}")
+                    }
+                })
+            }
+
+            override fun onCancelled(error: DatabaseError) {
+                println("Job loading cancelled: ${error.message}")
+            }
+        })
+    }
+
 }

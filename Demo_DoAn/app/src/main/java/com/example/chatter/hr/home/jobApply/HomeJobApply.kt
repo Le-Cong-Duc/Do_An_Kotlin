@@ -32,7 +32,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.example.chatter.model.Job
 import com.example.chatter.model.UserCV
-import com.google.firebase.auth.FirebaseAuth
+import com.example.chatter.AI.MatchResult
 
 
 @RequiresApi(Build.VERSION_CODES.O)
@@ -42,6 +42,7 @@ fun HomeJobApply(navController: NavController) {
     val viewModel: JobApplyViewModel = viewModel()
     val usercv by viewModel.userCV.collectAsState()
     val job by viewModel.job.collectAsState()
+    val matchResults by viewModel.matchResults.collectAsState()
 
     var selectedStatus by remember { mutableStateOf(JobStatus.APPLIED) }
 
@@ -69,10 +70,10 @@ fun HomeJobApply(navController: NavController) {
 
         JobApplyCardList(
             status = selectedStatus,
-            userCvs = usercv,
+            userCvs = matchResults,
             jobs = job,
             viewModel = viewModel,
-            navController = navController
+            navController = navController,
         )
 
     }
@@ -103,53 +104,55 @@ fun StatusItem(text: String, selected: Boolean, onClick: () -> Unit) {
 @Composable
 fun JobApplyCardList(
     status: JobStatus,
-    userCvs: List<UserCV>,
+    userCvs: List<MatchResult>,
     jobs: Map<String, Job>,
     viewModel: JobApplyViewModel,
     navController: NavController
 ) {
-    val filtered = userCvs.filter {
-        when (status) {
-            JobStatus.APPLIED -> it.status == 1
-            JobStatus.INTERVIEW -> it.status == 2
-            JobStatus.PASS -> it.status == 3
-        }
+
+    val filtered = when (status) {
+        JobStatus.APPLIED -> userCvs.filter { it.userCV.status == 1 }
+        JobStatus.INTERVIEW -> userCvs.filter { it.userCV.status == 2 }
+        JobStatus.PASS -> userCvs.filter { it.userCV.status == 3 }
     }
 
-    LazyColumn(modifier = Modifier
-        .fillMaxSize()
-        .padding(bottom = 80.dp))
+    LazyColumn(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(bottom = 80.dp)
+    )
     {
         items(filtered) { cv ->
-            val job = jobs[cv.jobId]
+            val job = jobs[cv.userCV.jobId]
             JobApplyCard(
                 cv = cv,
                 job = job,
                 status = status,
                 onReject = {
-                    viewModel.updateCvStatus(cv.id, 0)
+                    viewModel.updateCvStatus(cv.userCV.id, 0)
                 },
                 onAccept = {
-                    viewModel.updateCvStatus(cv.id, 2)
+                    viewModel.updateCvStatus(cv.userCV.id, 2)
                 },
                 onPass = {
-                    viewModel.updateCvStatus(cv.id, 3)
+                    viewModel.updateCvStatus(cv.userCV.id, 3)
                 },
                 onFail = {
-                    viewModel.updateCvStatus(cv.id, 4)
+                    viewModel.updateCvStatus(cv.userCV.id, 4)
                 },
                 onChat = {
-                    navController.navigate("chat/${cv.userId}&${cv.name}")
+                    navController.navigate("chat/${cv.userCV.userId}&${cv.userCV.name}")
                 },
                 onPickDate = { date ->
-                    viewModel.updateCvDate(cv.id, date)
+                    viewModel.updateCvDate(cv.userCV.id, date)
                 },
                 onDateInterview = { date ->
-                    viewModel.updateCvDateInterview(cv.id, date)
+                    viewModel.updateCvDateInterview(cv.userCV.id, date)
                 }
             )
             Spacer(modifier = Modifier.height(10.dp))
         }
+
     }
 
 }

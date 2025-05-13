@@ -3,8 +3,6 @@ package com.example.chatter.AI
 import com.example.chatter.model.UserCV
 
 data class MatchResult(
-    val cvId: String,
-    val jobId: String,
+    val userCV: UserCV,
     val score: Double,
-    val cv: UserCV
 )

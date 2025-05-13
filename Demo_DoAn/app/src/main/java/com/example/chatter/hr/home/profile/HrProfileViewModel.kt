@@ -40,7 +40,7 @@ class HrProfileViewModel : ViewModel() {
     }
 
     fun isEditing() {
-        editing.value = true
+        editing.value = !editing.value
     }
 
     fun saveProfile() {

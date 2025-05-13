@@ -31,7 +31,6 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.example.chatter.model.Job
-import com.example.chatter.model.UserCV
 import com.example.chatter.AI.MatchResult
 
 

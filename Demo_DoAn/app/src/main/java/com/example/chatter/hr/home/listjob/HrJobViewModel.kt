@@ -60,7 +60,9 @@ class HrJobViewModel : ViewModel() {
 
                 val updatedJob = job.copy(id = jobId)
 
-                dbRef.child(jobId).setValue(updatedJob).await()
+                if (jobId != null) {
+                    dbRef.child(jobId).setValue(updatedJob).await()
+                }
             } catch (e: Exception) {
                 e.printStackTrace()
             }

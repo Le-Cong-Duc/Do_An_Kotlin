@@ -1,7 +1,7 @@
 package com.example.chatter.model
 
 data class Job(
-    val id: String? = "",
+    var id: String? = "",
     val title: String? = "",
     val skills: List<String>? = emptyList(),
     val experience: String? = "",

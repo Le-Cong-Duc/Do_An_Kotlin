@@ -49,7 +49,7 @@ fun JobItem(
                 Column(modifier = Modifier.weight(1f)) {
                     job.title?.let { Text(text = it, fontWeight = FontWeight.Bold) }
                     job.company?.let { Text(text = it, color = Color(0xFF03DAC5)) }
-                    Text(text = "Lương: ${job.salary}")
+                    Text(text = "Lương: ${job.salary}$")
                     Text(text = "Kinh nghiệm: ${job.experience}")
                     Text(text = "Địa điểm: ${job.address}")
                     Text(text = "Loại hình: ${job.jobType}, ${job.workingForm}")

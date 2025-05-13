@@ -196,11 +196,8 @@ fun ChatBox(message: Message) {
     val backgroundColor = if (isCurrentUser) Color(0xFF007BFF) else Color(0xFFEDEDED)
     val textColor = if (isCurrentUser) Color.White else Color.Black
     // nếu là người dùng thì tin nhắn có background màu tím ngược lại là xàm
-    val boxColor = if (isCurrentUser) {
-        Purple
-    } else {
-        Color.Gray
-    }
+    val boxColor = Purple
+
 
     Box(
         modifier = Modifier

@@ -39,7 +39,7 @@ fun JobDetail(
                 Text("🧾 Tiêu đề: ${job.title}")
                 Text("🏢 Công ty: ${job.company}")
                 Text("📍 Địa điểm: ${job.address}")
-                Text("💰 Mức lương: ${job.salary}")
+                Text("💰 Mức lương: ${job.salary}$")
                 Text("📚 Trình độ học vấn: ${job.education}")
                 Text("💼 Kinh nghiệm: ${job.experience}")
                 Text("👤 Giới tính: ${job.gender}")

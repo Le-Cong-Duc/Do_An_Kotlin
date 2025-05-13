@@ -35,6 +35,8 @@ fun ApplyJob(
     var experience by remember { mutableStateOf(userProfile.experience ?: "") }
     var skills by remember { mutableStateOf("") }
     var cvUri by remember { mutableStateOf<Uri?>(null) }
+    var skillsError by remember { mutableStateOf(false) }
+    var errorMessage by remember { mutableStateOf("") }
 
     val context = LocalContext.current
     val scope = rememberCoroutineScope()
@@ -52,6 +54,11 @@ fun ApplyJob(
         onDismissRequest = onDismiss,
         confirmButton = {
             TextButton(onClick = {
+                if (skills.isBlank()) {
+                    skillsError = true
+                    errorMessage = "Vui lòng nhập kỹ năng"
+                    return@TextButton
+                }
                 scope.launch {
                     val cvUrl = cvUri?.let { supabaseStorage.upLoadImage(it) } ?: ""
 
@@ -125,10 +132,20 @@ fun ApplyJob(
 
                 OutlinedTextField(
                     value = skills,
-                    onValueChange = { skills = it },
+                    onValueChange = {
+                        skills = it
+                        skillsError = false // Reset lỗi nếu user bắt đầu nhập
+                    },
                     label = { Text("Kỹ năng") },
-                    placeholder = { Text("VD: Kotlin, Firebase") }
+                    placeholder = { Text("VD: Kotlin, Firebase") },
+                    isError = skillsError,
+                    supportingText = {
+                        if (skillsError) {
+                            Text(text = errorMessage, color = MaterialTheme.colorScheme.error)
+                        }
+                    }
                 )
+
             }
         }
     )

@@ -24,6 +24,8 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -47,14 +49,17 @@ fun JobListScreen(modifier: Modifier) {
     var selectedJobDetail by remember { mutableStateOf<Job?>(null) }
 
 
+
     Column(
         modifier = Modifier
             .fillMaxSize()
             .padding(16.dp)
-    ) {
+    ) { Spacer(modifier = Modifier.height(30.dp))
+
         Text(
             text = "Tìm kiếm công việc",
-            fontSize = 20.sp,
+            color = Color(0xFF1B4965),
+            style = TextStyle(fontSize = 20.sp),
             fontWeight = FontWeight.Bold
         )
 

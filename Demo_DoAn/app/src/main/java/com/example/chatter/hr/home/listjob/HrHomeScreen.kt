@@ -26,7 +26,11 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.chatter.model.Job
 
@@ -73,7 +77,8 @@ fun HrHomeScreen(modifier: Modifier = Modifier) {
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("Quản lý tuyển dụng") },
+                title = { Text("Quản lý tuyển dụng",color = Color(0xFF1B4965),
+                    style = TextStyle(fontSize = 20.sp), fontWeight = FontWeight.Bold) },
                 actions = {
                     IconButton(onClick = {
                         showEditForm = null

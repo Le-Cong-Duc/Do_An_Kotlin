@@ -26,8 +26,10 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.example.chatter.model.Job
@@ -46,7 +48,9 @@ fun HomeJobApply(navController: NavController) {
     var selectedStatus by remember { mutableStateOf(JobStatus.APPLIED) }
 
     Column(modifier = Modifier.padding(16.dp)) {
-        Text("Apply Jobs", fontWeight = FontWeight.Bold)
+        Spacer(modifier = Modifier.height(30.dp))
+        Text("Apply Jobs", color = Color(0xFF1B4965),
+            style = TextStyle(fontSize = 20.sp), fontWeight = FontWeight.Bold)
 
         Spacer(modifier = Modifier.height(12.dp))
 

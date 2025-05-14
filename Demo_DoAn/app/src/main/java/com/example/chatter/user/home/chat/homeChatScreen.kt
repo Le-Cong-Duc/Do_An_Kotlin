@@ -19,7 +19,6 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
-import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
@@ -33,16 +32,14 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
-import com.example.chatter.ui.theme.DarkGrey
 
-// Giao diện home
 @Composable
 fun HomeChatScreen(navController: NavController) {
-    // Tạo viewmodel bằng hilt để tự động Inject
     val viewModel = hiltViewModel<HomeChatViewModel>()
 
-    // lấy danh sách người dùng từ ViewModel
-    // collectAsState : giúp UI tự động cập nhật khi dữ liệu thay đổi
+    val filteredUsers = viewModel.filteredUsers.collectAsState()
+    val searchText = viewModel.searchQuery.collectAsState()
+
     val users = viewModel.user.collectAsState()
 
     Scaffold(
@@ -54,7 +51,6 @@ fun HomeChatScreen(navController: NavController) {
                 .padding(it)
         ) {
             LazyColumn {
-                //Tiêu đề danh sách
                 item {
                     Text(
                         text = "Messages",color = Color(0xFF1B4965),
@@ -64,27 +60,16 @@ fun HomeChatScreen(navController: NavController) {
                     )
                 }
 
-                //Thanh tìm kiếm
                 item {
                     TextField(
-                        value = "",
-                        onValueChange = {},
+                        value = searchText.value,
+                        onValueChange = { query -> viewModel.updateSearchQuery(query) },
                         placeholder = { Text(text = "Search...") },
                         modifier = Modifier
                             .fillMaxWidth()
                             .padding(horizontal = 16.dp, vertical = 8.dp)
                             .background(Color(0xFFE2ECF1))
                             .clip(RoundedCornerShape(40.dp)),
-                        textStyle = TextStyle(color = Color.LightGray),
-                        colors = TextFieldDefaults.colors().copy(
-                            focusedContainerColor = DarkGrey,
-                            unfocusedContainerColor = Color(0xFFB1DCEF),
-                            focusedTextColor = Color.Gray,
-                            unfocusedTextColor = Color.Gray,
-                            focusedPlaceholderColor = Color.Gray,
-                            unfocusedPlaceholderColor = Color.Gray,
-                            focusedIndicatorColor = Color.Gray
-                        ),
                         trailingIcon = {
                             Icon(
                                 imageVector = Icons.Filled.Search,
@@ -94,8 +79,7 @@ fun HomeChatScreen(navController: NavController) {
                     )
                 }
 
-                // Hiển thị danh sách người dùng
-                items(users.value) { user ->
+                items(filteredUsers.value) { user ->
                     Column {
                         Avatar(
                             user.name,
@@ -111,7 +95,6 @@ fun HomeChatScreen(navController: NavController) {
     }
 }
 
-// Giao diện avatar
 @Composable
 fun Avatar(userName: String, modifier: Modifier, onclick: () -> Unit) {
     Box(modifier = Modifier.clickable {

@@ -21,14 +21,13 @@ import java.util.UUID
 import javax.inject.Inject
 
 @HiltViewModel
-// context đại diện cho mtruong ứng dụng giúp truy cập tài nguyên như file, csdl
 class ChatViewModel @Inject constructor(@ApplicationContext val context: Context) : ViewModel() {
     private val _messages = MutableStateFlow<List<Message>>(emptyList())
     val message = _messages.asStateFlow()
 
     val db = Firebase.database
 
-    fun createChatRoomId(userId1: String, userId2: String): String {
+    private fun createChatRoomId(userId1: String, userId2: String): String {
         return if (userId1 < userId2) {
             "chat_${userId1}_${userId2}"
         } else {
@@ -55,7 +54,6 @@ class ChatViewModel @Inject constructor(@ApplicationContext val context: Context
                 }
 
                 override fun onCancelled(error: DatabaseError) {
-                    TODO("Not yet implemented")
                 }
             })
     }

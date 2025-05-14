@@ -121,25 +121,24 @@ fun JobListScreen(modifier: Modifier) {
         LazyColumn(
             modifier = Modifier.padding(bottom = 80.dp)
         ) {
-            val filteredJobs = when (selectedFilter) {
-                "Phù hợp nhất" -> jobs  // Hiển thị tất cả
-                "Backend Developer" -> jobs.filter {
-                    it.category?.contains(
-                        "Backend",
-                        ignoreCase = true
-                    ) == true
+            val filteredJobs = jobs
+                .filter { job ->
+                    job.title?.contains(searchText, ignoreCase = true) == true ||
+                            job.company?.contains(searchText, ignoreCase = true) == true
                 }
-
-                "Frontend Developer" -> jobs.filter {
-                    it.category?.contains(
-                        "Frontend",
-                        ignoreCase = true
-                    ) == true
+                .let { searchedJobs ->
+                    when (selectedFilter) {
+                        "Phù hợp nhất" -> searchedJobs
+                        "Backend Developer" -> searchedJobs.filter {
+                            it.category?.contains("Backend", ignoreCase = true) == true
+                        }
+                        "Frontend Developer" -> searchedJobs.filter {
+                            it.category?.contains("Frontend", ignoreCase = true) == true
+                        }
+                        "Lương cao nhất" -> searchedJobs.sortedByDescending { it.salary ?: 0 }
+                        else -> searchedJobs
+                    }
                 }
-
-                "Lương cao nhất" -> jobs.sortedByDescending { it.salary ?: 0 }
-                else -> jobs
-            }
             items(filteredJobs) { job ->
                 JobItem(
                     job = job,

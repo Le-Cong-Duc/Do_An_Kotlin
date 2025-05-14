@@ -50,7 +50,7 @@ import com.google.firebase.Firebase
 import com.google.firebase.auth.auth
 
 @Composable
-fun ChatScreen(navController: NavController, userId: String, userName: String) {
+fun ChatScreen(userId: String, userName: String) {
 
     Scaffold(
         containerColor =  Color(0xFFF9F9FB)
@@ -156,7 +156,6 @@ fun ChatMessages(
             )
 
             IconButton(onClick = {
-                // gửi tin nhắn
                 onSendMessage(msg.value)
                 msg.value = ""
             }) {

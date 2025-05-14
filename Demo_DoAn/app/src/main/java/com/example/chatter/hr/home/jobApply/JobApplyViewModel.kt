@@ -13,7 +13,6 @@ import com.google.firebase.database.ValueEventListener
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.tasks.await
 
 class JobApplyViewModel : ViewModel() {
     private val _userCvs = MutableStateFlow<List<UserCV>>(emptyList())

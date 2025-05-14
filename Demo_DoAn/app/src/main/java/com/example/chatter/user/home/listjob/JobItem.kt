@@ -84,7 +84,7 @@ fun JobItem(job: Job, onApplyClick: () -> Unit, onDetailClick: () -> Unit) {
                 ) {
                     job.experience?.let {
                         Text(
-                            text = it,
+                            text = "Kinh nghiem : $it",
                             style = MaterialTheme.typography.bodySmall
                         )
                     }
@@ -94,7 +94,7 @@ fun JobItem(job: Job, onApplyClick: () -> Unit, onDetailClick: () -> Unit) {
 
                 job.salary?.let {
                     Text(
-                        text = "${it} $",
+                        text = "Luong: $it $",
                         style = MaterialTheme.typography.bodyMedium,
                         color = Color(0xFFFF4081)
                     )
@@ -106,7 +106,7 @@ fun JobItem(job: Job, onApplyClick: () -> Unit, onDetailClick: () -> Unit) {
 
             job.address?.let {
                 Text(
-                    text = it,
+                    text = "Dia chi: $it",
                     style = MaterialTheme.typography.bodyMedium
                 )
             }

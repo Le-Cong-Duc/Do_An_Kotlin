@@ -89,7 +89,7 @@ fun MainApp() {
 
                 val userId = it.arguments?.getString("userId") ?: ""
                 val userName = it.arguments?.getString("userName") ?: ""
-                ChatScreen(navController, userId, userName)
+                ChatScreen(userId, userName)
             }
         }
 

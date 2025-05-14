@@ -94,7 +94,7 @@ fun JobItem(job: Job, onApplyClick: () -> Unit, onDetailClick: () -> Unit) {
 
                 job.salary?.let {
                     Text(
-                        text = "${it}$",
+                        text = "${it} $",
                         style = MaterialTheme.typography.bodyMedium,
                         color = Color(0xFFFF4081)
                     )

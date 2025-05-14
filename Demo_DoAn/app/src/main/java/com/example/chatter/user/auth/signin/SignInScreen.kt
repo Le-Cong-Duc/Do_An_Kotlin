@@ -62,22 +62,10 @@ fun SignInScreen(navController: NavController) {
                                 }
 
                                 false -> {
-                                    Toast.makeText(
-                                        context,
-                                        "Đây là tài khoản Hr\n(không để đăng nhập)",
-                                        Toast.LENGTH_SHORT
-                                    ).show()
+                                    navController.navigate("homeHr")
+                                }
 
-                                    password = ""
-                                    email = ""
-                                }
-                                else -> {
-                                    Toast.makeText(
-                                        context,
-                                        "Wrong email or password !!",
-                                        Toast.LENGTH_SHORT
-                                    ).show()
-                                }
+                                else -> {}
                             }
                         } else {
                             Toast.makeText(
@@ -90,9 +78,12 @@ fun SignInScreen(navController: NavController) {
                 }
             }
 
-            else -> {
+            is SignInState.Error -> {
+                Toast.makeText(context, "Sai email hoặc tài khoản", Toast.LENGTH_SHORT).show()
 
             }
+
+            else -> {}
         }
     }
 
@@ -141,7 +132,6 @@ fun SignInScreen(navController: NavController) {
             Button(
                 onClick = { viewModel.signIn(email, password) },
                 modifier = Modifier.fillMaxWidth(),
-                // ẩn đi nếu email password k hợp lệ hoặc k phải đang Load
                 enabled = email.isNotEmpty() && password.isNotEmpty()
             ) {
                 Text(text = "Sign In")
@@ -153,11 +143,6 @@ fun SignInScreen(navController: NavController) {
                 Text(text = "Don't have an account? Sign Up")
             }
 
-            TextButton(
-                onClick = { navController.navigate("login_hr") }
-            ) {
-                Text(text = "Bạn là HR?")
-            }
         }
     }
 }

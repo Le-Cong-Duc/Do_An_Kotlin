@@ -33,7 +33,7 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.example.chatter.model.Job
-import com.example.chatter.AI.MatchResult
+import com.example.chatter.hr.AI.MatchResult
 
 
 @RequiresApi(Build.VERSION_CODES.O)

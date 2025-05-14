@@ -58,23 +58,16 @@ fun ChatScreen(navController: NavController, userId: String, userName: String) {
     Scaffold(
         containerColor =  Color(0xFFF9F9FB)
     ) {
-        // Tạo viewmodel thông qua hilt từ ChatViewModel
         val viewModel: ChatViewModel = hiltViewModel()
 
-        // Tạo 1 state chọn ảnh từ thư viện
         val chooseGallery = remember {
             mutableStateOf(false)
         }
 
-        // dùng để xử lí việc chọn ảnh từ thư viên của người dùng
         val imageLaucher = rememberLauncherForActivityResult(
-            // ActivityResultContracts.GetContent(): dùng để mở thử viện ảnh
             contract = ActivityResultContracts.GetContent()
         ) { uri: Uri? ->
-            // nếu uri không null thì gửi đi
             uri?.let {
-                // uri được gửi tới sendMessage
-                // it là uri được gửi đi
                 viewModel.sendImageMessage(it, userId)
             }
         }
@@ -108,7 +101,6 @@ fun ChatScreen(navController: NavController, userId: String, userName: String) {
     }
 }
 
-// hiển thị cuộc trò chuyện
 @Composable
 fun ChatMessages(
     userName: String,
@@ -116,10 +108,6 @@ fun ChatMessages(
     onSendMessage: (String) -> Unit,
     onImageClicker: () -> Unit
 ) {
-
-    // dùng để ẩn bàn phím ứng dụng đi
-    val hideKeyBoardController = LocalSoftwareKeyboardController.current
-    // dùng để lưu giữ trạng thái thanh tin nhắn
     val msg = remember {
         mutableStateOf("")
     }
@@ -148,18 +136,15 @@ fun ChatMessages(
         ) {
 
             IconButton(onClick = {
-                // mở thư viện
                 onImageClicker()
-                // sau khi nhấn tin nhắn hiện tại sẽ dc xóa
+
                 msg.value = ""
             }) {
                 Icon(imageVector = Icons.Filled.Add, contentDescription = "gallery")
             }
 
             TextField(
-                // value được lưu trong state msg
                 value = msg.value,
-                // cập nhật giá trị người dùng thay đổi
                 onValueChange = { msg.value = it },
                 modifier = Modifier
                     .weight(1f)
@@ -167,10 +152,10 @@ fun ChatMessages(
                 .background(Color(0xFF1B4965)),
                 placeholder = { Text(text = "Type a message") },
                 // làm cho bàn phím ẩn đi
-                keyboardOptions = KeyboardOptions.Default.copy(imeAction = ImeAction.Done),
-                keyboardActions = KeyboardActions(onDone = {
-                    hideKeyBoardController?.hide()
-                }),
+//                keyboardOptions = KeyboardOptions.Default.copy(imeAction = ImeAction.Done),
+//                keyboardActions = KeyboardActions(onDone = {
+//                    hideKeyBoardController?.hide()
+//                }),
                 colors = TextFieldDefaults.colors(
                     focusedContainerColor = Color(0xFFF2F2F2),
                     unfocusedContainerColor = Color(0xFFF2F2F2),
@@ -182,7 +167,6 @@ fun ChatMessages(
             )
 
             IconButton(onClick = {
-                // gửi tin nhắn
                 onSendMessage(msg.value)
                 msg.value = ""
             }) {
@@ -192,7 +176,7 @@ fun ChatMessages(
     }
 }
 
-// hiển thị từng tin nhắn
+
 @Composable
 fun ChatBox(message: Message) {
     val isCurrentUser = message.senderId == Firebase.auth.currentUser?.uid

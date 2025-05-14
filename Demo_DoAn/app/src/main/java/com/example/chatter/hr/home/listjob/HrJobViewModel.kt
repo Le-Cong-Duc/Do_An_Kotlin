@@ -74,7 +74,6 @@ class HrJobViewModel : ViewModel() {
             try {
                 dbRef.child(jobId).removeValue().await()
             } catch (e: Exception) {
-                // Xử lý lỗi nếu cần
                 e.printStackTrace()
             }
         }

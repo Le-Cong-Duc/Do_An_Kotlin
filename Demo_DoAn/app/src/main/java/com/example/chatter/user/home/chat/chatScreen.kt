@@ -18,9 +18,8 @@ import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.text.KeyboardActions
-import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.Send
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Send
 import androidx.compose.material3.Icon
@@ -39,9 +38,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
@@ -58,23 +55,16 @@ fun ChatScreen(navController: NavController, userId: String, userName: String) {
     Scaffold(
         containerColor =  Color(0xFFF9F9FB)
     ) {
-        // Tạo viewmodel thông qua hilt từ ChatViewModel
         val viewModel: ChatViewModel = hiltViewModel()
 
-        // Tạo 1 state chọn ảnh từ thư viện
         val chooseGallery = remember {
             mutableStateOf(false)
         }
 
-        // dùng để xử lí việc chọn ảnh từ thư viên của người dùng
         val imageLaucher = rememberLauncherForActivityResult(
-            // ActivityResultContracts.GetContent(): dùng để mở thử viện ảnh
             contract = ActivityResultContracts.GetContent()
         ) { uri: Uri? ->
-            // nếu uri không null thì gửi đi
             uri?.let {
-                // uri được gửi tới sendMessage
-                // it là uri được gửi đi
                 viewModel.sendImageMessage(it, userId)
             }
         }
@@ -108,7 +98,6 @@ fun ChatScreen(navController: NavController, userId: String, userName: String) {
     }
 }
 
-// hiển thị cuộc trò chuyện
 @Composable
 fun ChatMessages(
     userName: String,
@@ -117,9 +106,6 @@ fun ChatMessages(
     onImageClicker: () -> Unit
 ) {
 
-    // dùng để ẩn bàn phím ứng dụng đi
-    val hideKeyBoardController = LocalSoftwareKeyboardController.current
-    // dùng để lưu giữ trạng thái thanh tin nhắn
     val msg = remember {
         mutableStateOf("")
     }
@@ -129,11 +115,10 @@ fun ChatMessages(
         LazyColumn(
             modifier = Modifier.weight(1f)
         ) {
-            //Tên người dùng
+
             item {
                 Avatar(userName = userName,  modifier = Modifier.padding(12.dp)) { }
             }
-            // danh sách tin nhắn
             items(messages) { message ->
                 ChatBox(message = message)
             }
@@ -154,19 +139,12 @@ fun ChatMessages(
             }
 
             TextField(
-                // value được lưu trong state msg
                 value = msg.value,
-                // cập nhật giá trị người dùng thay đổi
                 onValueChange = { msg.value = it },
                 modifier = Modifier.weight(1f)
                     .padding(horizontal = 8.dp)
                     .background(Color(0xFF1B4965)),
                 placeholder = { Text(text = "Type a message") },
-                // làm cho bàn phím ẩn đi
-                keyboardOptions = KeyboardOptions.Default.copy(imeAction = ImeAction.Done),
-                keyboardActions = KeyboardActions(onDone = {
-                    hideKeyBoardController?.hide()
-                }),
                 colors = TextFieldDefaults.colors(
                     focusedContainerColor = Color(0xFFF2F2F2),
                     unfocusedContainerColor = Color(0xFFF2F2F2),
@@ -182,20 +160,17 @@ fun ChatMessages(
                 onSendMessage(msg.value)
                 msg.value = ""
             }) {
-                Icon(imageVector = Icons.Filled.Send, contentDescription = "send")
+                Icon(imageVector = Icons.AutoMirrored.Filled.Send, contentDescription = "send")
             }
         }
     }
 }
 
-// hiển thị từng tin nhắn
 @Composable
 fun ChatBox(message: Message) {
-    // xem xét tin nhắn gửi đi có phải là người dùng không
     val isCurrentUser = message.senderId == Firebase.auth.currentUser?.uid
     val backgroundColor = if (isCurrentUser) Color(0xFF007BFF) else Color(0xFFEDEDED)
     val textColor = if (isCurrentUser) Color.White else Color.Black
-    // nếu là người dùng thì tin nhắn có background màu tím ngược lại là xàm
     val boxColor = Purple
 
 
@@ -204,7 +179,6 @@ fun ChatBox(message: Message) {
             .fillMaxWidth()
             .padding(vertical = 4.dp, horizontal = 8.dp),
     ) {
-        // nếu là người dùng thì tin nhắn bên trái
         val alignment = if (isCurrentUser) {
             Alignment.CenterEnd
         } else {
@@ -218,7 +192,6 @@ fun ChatBox(message: Message) {
                 .align(alignment),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            // nếu không phải người dùng thì sẽ hiển thị icon (avatar)
             if (!isCurrentUser) {
                 Image(
                     painter = painterResource(id = R.drawable.account),
@@ -228,7 +201,6 @@ fun ChatBox(message: Message) {
                 Spacer(modifier = Modifier.width(8.dp))
             }
 
-            //kiểm tra xem tin nhắn có phải là ảnh không nếu là ảnh thì hiển thị Image còn không thì là Text
             Box(
                 modifier = Modifier
                     .background(backgroundColor, RoundedCornerShape(16.dp))
@@ -236,7 +208,6 @@ fun ChatBox(message: Message) {
                     .widthIn(max = 250.dp)
             ) {
                 if (message.imageUrl != null) {
-                    //AsyncImage : hiển thị hình ảnh dưới dạng url
                     AsyncImage(
                         model = message.imageUrl,
                         contentDescription = null,

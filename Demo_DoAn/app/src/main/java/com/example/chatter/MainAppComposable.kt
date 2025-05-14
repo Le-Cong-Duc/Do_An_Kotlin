@@ -1,6 +1,5 @@
 package com.example.chatter
 
-import android.widget.Toast
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
@@ -9,14 +8,11 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
-import com.example.chatter.hr.auth.signin.SignInScreen_Hr
-import com.example.chatter.hr.auth.signup.SignUpScreen_Hr
 import com.example.chatter.hr.home.chat_hr.HomeChatScreen_Hr
 import com.example.chatter.hr.home.HrMainScreen
 import com.example.chatter.hr.home.profile.HrMainProfile
@@ -60,12 +56,6 @@ fun MainApp() {
             composable("signup") {
                 SignUpScreen(navController)
             }
-            composable("login_hr") {
-                SignInScreen_Hr(navController)
-            }
-            composable("signup_hr") {
-                SignUpScreen_Hr(navController)
-            }
 
             composable("chat") {
                 HomeChatScreen(navController)
@@ -88,7 +78,6 @@ fun MainApp() {
                 HrMainProfile(navController)
             }
 
-            // điều hướng có thanh số
             composable("chat/{userId}&{userName}", arguments = listOf(
                 navArgument("userId") {
                     type = NavType.StringType
@@ -97,7 +86,7 @@ fun MainApp() {
                     type = NavType.StringType
                 }
             )) {
-                // lấy giá trị id và năm từ route
+
                 val userId = it.arguments?.getString("userId") ?: ""
                 val userName = it.arguments?.getString("userName") ?: ""
                 ChatScreen(navController, userId, userName)

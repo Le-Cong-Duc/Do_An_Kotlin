@@ -2,8 +2,8 @@ package com.example.chatter.hr.home.jobApply
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.chatter.AI.CVMatchingEngine
-import com.example.chatter.AI.MatchResult
+import com.example.chatter.hr.AI.CVMatchingEngine
+import com.example.chatter.hr.AI.MatchResult
 import com.example.chatter.model.Job
 import com.example.chatter.model.UserCV
 import com.google.firebase.database.DataSnapshot
@@ -29,7 +29,7 @@ class JobApplyViewModel : ViewModel() {
     private val jobRef = FirebaseDatabase.getInstance().getReference("job")
 
     init {
-        loadCVsAndJobs()
+        getUserCv()
     }
 
     private fun getUserCv() {
@@ -46,7 +46,7 @@ class JobApplyViewModel : ViewModel() {
                 }
                 _userCvs.value = list
 
-                getJob(list)
+                loadJobsAndMatchCVs(list)
             }
 
             override fun onCancelled(error: DatabaseError) {
@@ -55,28 +55,54 @@ class JobApplyViewModel : ViewModel() {
         })
     }
 
-    private fun getJob(listCv: List<UserCV>) {
-        viewModelScope.launch {
-            try {
-                val jobId = listCv.map { it.jobId }.distinct()
-                val jobs = mutableMapOf<String, Job>()
+    private fun loadJobsAndMatchCVs(cvList: List<UserCV>) {
+        val jobIds = cvList.map { it.jobId }.distinct()
+        if (jobIds.isEmpty()) return
 
-                jobId.forEach { jobid ->
-                    if (jobId.isNotEmpty()) {
-                        val snapshot =
-                            FirebaseDatabase.getInstance().getReference("job").child(jobid).get()
-                                .await()
-                        val job = snapshot.getValue(Job::class.java)
-                        if (job != null) {
-                            jobs[jobid] = job
-                        }
+        val jobMap = mutableMapOf<String, Job>()
+        var loadedJobCount = 0
+
+        jobIds.forEach { jobId ->
+            jobRef.child(jobId).addValueEventListener(object : ValueEventListener {
+                override fun onDataChange(snapshot: DataSnapshot) {
+                    val job = snapshot.getValue(Job::class.java)
+                    if (job != null) {
+                        job.id = snapshot.key ?: jobId
+                        jobMap[jobId] = job
+                    }
+
+                    loadedJobCount++
+
+                    if (loadedJobCount >= jobIds.size) {
+                        _job.value = jobMap
+                        performMatching(cvList, jobMap)
                     }
                 }
 
-                _job.value = jobs
-            } catch (e: Exception) {
-                println(e.message)
+                override fun onCancelled(error: DatabaseError) {
+                    println("Job loading cancelled: ${error.message}")
+                }
+            })
+        }
+    }
+
+    private fun performMatching(cvList: List<UserCV>, jobMap: Map<String, Job>) {
+        viewModelScope.launch {
+            val allResults = mutableListOf<MatchResult>()
+
+            cvList.forEach { cv ->
+                val jobId = cv.jobId
+                val job = jobMap[jobId]
+
+                if (job != null) {
+                    val matchResult = CVMatchingEngine.match(cv, job)
+                    allResults.add(matchResult)
+                } else {
+                    allResults.add(MatchResult(cv, 0.0))
+                }
             }
+
+            _matchResults.value = allResults.sortedByDescending { it.score }
         }
     }
 
@@ -90,90 +116,6 @@ class JobApplyViewModel : ViewModel() {
 
     fun updateCvDateInterview(cvId: String, date: String) {
         dbRef.child(cvId).child("dateInterView").setValue(date)
-    }
-
-    private fun loadCVsAndJobs() {
-        // First load all CVs
-        dbRef.addValueEventListener(object : ValueEventListener {
-            override fun onDataChange(snapshot: DataSnapshot) {
-                val cvList = mutableListOf<UserCV>()
-                for (child in snapshot.children) {
-                    val cv = child.getValue(UserCV::class.java)
-                    if (cv != null) {
-                        cv.id = child.key.toString()
-                        cvList.add(cv)
-                    }
-                }
-                _userCvs.value = cvList
-
-                // After loading CVs, load all jobs
-                loadJobsAndMatchCVs(cvList)
-            }
-
-            override fun onCancelled(error: DatabaseError) {
-                println("CV loading cancelled: ${error.message}")
-            }
-        })
-    }
-
-    private fun loadJobsAndMatchCVs(cvList: List<UserCV>) {
-        val jobIds = cvList.mapNotNull { it.jobId }.distinct()
-        if (jobIds.isEmpty()) return
-
-        // Create a map to store jobs by ID
-        val jobMap = mutableMapOf<String, Job>()
-        var loadedJobCount = 0
-
-        // Load each job by ID
-        jobIds.forEach { jobId ->
-            jobRef.child(jobId).addValueEventListener(object : ValueEventListener {
-                override fun onDataChange(snapshot: DataSnapshot) {
-                    val job = snapshot.getValue(Job::class.java)
-                    if (job != null) {
-                        // Add job ID to the job object if needed
-                        job.id = snapshot.key ?: jobId
-                        jobMap[jobId] = job
-                    }
-
-                    loadedJobCount++
-
-                    // When all jobs are loaded, update the state and match CVs
-                    if (loadedJobCount >= jobIds.size) {
-                        _job.value = jobMap
-                        performMatching(cvList, jobMap)
-                    }
-                }
-
-                override fun onCancelled(error: DatabaseError) {
-                    println("Job loading cancelled: ${error.message}")
-                    loadedJobCount++
-                }
-            })
-        }
-    }
-
-    private fun performMatching(cvList: List<UserCV>, jobMap: Map<String, Job>) {
-        viewModelScope.launch {
-            val allResults = mutableListOf<MatchResult>()
-
-            // Match each CV with its corresponding job
-            cvList.forEach { cv ->
-                val jobId = cv.jobId
-                val job = jobMap[jobId]
-
-                if (job != null) {
-                    // Use the matching engine to calculate score
-                    val matchResult = CVMatchingEngine.match(cv, job)
-                    allResults.add(matchResult)
-                } else {
-                    // If job not found, add CV with zero score
-                    allResults.add(MatchResult(cv, 0.0))
-                }
-            }
-
-            // Sort results by score (highest first)
-            _matchResults.value = allResults.sortedByDescending { it.score }
-        }
     }
 
 }

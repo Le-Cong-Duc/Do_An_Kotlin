@@ -54,7 +54,7 @@ class HrProfileViewModel : ViewModel() {
 
     fun logout(navController: NavController) {
         FirebaseAuth.getInstance().signOut()
-        navController.navigate("login_hr") {
+        navController.navigate("login") {
             popUpTo("homeHr") { inclusive = true }
         }
     }

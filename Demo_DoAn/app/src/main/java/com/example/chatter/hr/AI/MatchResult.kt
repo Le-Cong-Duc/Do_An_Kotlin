@@ -1,4 +1,4 @@
-package com.example.chatter.AI
+package com.example.chatter.hr.AI
 
 import com.example.chatter.model.UserCV
 

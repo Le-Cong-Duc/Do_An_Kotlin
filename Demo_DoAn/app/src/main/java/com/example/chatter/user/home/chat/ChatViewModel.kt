@@ -21,16 +21,13 @@ import java.util.UUID
 import javax.inject.Inject
 
 @HiltViewModel
-// context đại diện cho mtruong ứng dụng giúp truy cập tài nguyên như file, csdl
 class ChatViewModel @Inject constructor(@ApplicationContext val context: Context) : ViewModel() {
     private val _messages = MutableStateFlow<List<Message>>(emptyList())
     val message = _messages.asStateFlow()
 
-    val db = Firebase.database
+    private val db = Firebase.database
 
-    //Lấy dữ liệu tin nhắn từ database dựa theo id
-    // Thêm vào cả hai ViewModel (ChatViewModel và ChatViewModel_Hr)
-    fun createChatRoomId(userId1: String, userId2: String): String {
+    private fun createChatRoomId(userId1: String, userId2: String): String {
         return if (userId1 < userId2) {
             "chat_${userId1}_${userId2}"
         } else {
@@ -38,7 +35,6 @@ class ChatViewModel @Inject constructor(@ApplicationContext val context: Context
         }
     }
 
-    // Sửa lại phương thức getListenMessage
     fun getListenMessage(otherUserId: String) {
         val currentUserId = Firebase.auth.currentUser?.uid ?: return
         val chatRoomId = createChatRoomId(currentUserId, otherUserId)
@@ -57,12 +53,10 @@ class ChatViewModel @Inject constructor(@ApplicationContext val context: Context
                 }
 
                 override fun onCancelled(error: DatabaseError) {
-                    TODO("Not yet implemented")
                 }
             })
     }
 
-    // Sửa lại phương thức sendMessage
     fun sendMesssage(otherUserId: String, messageText: String?, image: String? = null) {
         val currentUserId = Firebase.auth.currentUser?.uid ?: return
         val chatRoomId = createChatRoomId(currentUserId, otherUserId)
@@ -81,7 +75,6 @@ class ChatViewModel @Inject constructor(@ApplicationContext val context: Context
             .setValue(message)
     }
 
-    // Sửa lại phương thức sendImageMessage
     fun sendImageMessage(uri: Uri, otherUserId: String) {
         viewModelScope.launch {
             val storageUtils = SupabbaseStorageUtils(context)
